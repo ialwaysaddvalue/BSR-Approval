@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookLaunch Pro — KDP Research Suite</title>
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="BookLaunch" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ── Sidebar ─────────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <a class="logo-mark" href="#">
+      <div class="logo-icon">B</div>
+      <div>
+        <div class="logo-text">BookLaunch Pro</div>
+        <div class="logo-sub">KDP Research Suite</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Overview</div>
+    <div class="nav-item active" data-tool="dashboard">
+      <span class="nav-icon">🏠</span>
+      <span>Dashboard</span>
+    </div>
+    <div class="nav-item" data-tool="profit-goal">
+      <span class="nav-icon">💰</span>
+      <span>Profit Goal</span>
+      <span class="nav-badge">New</span>
+    </div>
+    <div class="nav-item" data-tool="market">
+      <span class="nav-icon">📈</span>
+      <span>Market Overview</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Research Tools</div>
+    <div class="nav-item" data-tool="keywords">
+      <span class="nav-icon">🔑</span>
+      <span>Keyword Research</span>
+      <span class="nav-badge">Live</span>
+    </div>
+    <div class="nav-item" data-tool="bsr">
+      <span class="nav-icon">📊</span>
+      <span>BSR Calculator</span>
+    </div>
+    <div class="nav-item" data-tool="categories">
+      <span class="nav-icon">📂</span>
+      <span>Category Explorer</span>
+    </div>
+    <div class="nav-item" data-tool="niche">
+      <span class="nav-icon">🎯</span>
+      <span>Niche Finder</span>
+    </div>
+    <div class="nav-item" data-tool="book">
+      <span class="nav-icon">🔍</span>
+      <span>Book Analyzer</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Publishing Tools</div>
+    <div class="nav-item" data-tool="ads">
+      <span class="nav-icon">📣</span>
+      <span>KDP Ads Keywords</span>
+    </div>
+    <div class="nav-item" data-tool="lowcontent">
+      <span class="nav-icon">📓</span>
+      <span>Low-Content Ideas</span>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="nav-item" style="font-size:.78rem">
+      <span class="nav-icon">ℹ️</span>
+      <span>Data is estimated. No subscription needed.</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main ────────────────────────────────────────────────────────────────── -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-subtitle" id="topbar-subtitle">Market overview &amp; quick access</div>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-badge">Free Forever</span>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- ── Dashboard ───────────────────────────────────────────────────────── -->
+    <div class="tool-panel" id="panel-dashboard">
+      <div id="dashboard-content">
+        <div class="loading-state"><div class="spinner"></div><span>Loading dashboard…</span></div>
+      </div>
+    </div>
+
+    <!-- ── Profit Goal ──────────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-profit-goal">
+      <div class="section-header">
+        <div class="section-title">💰 What's Your Monthly Income Goal?</div>
+        <div class="section-desc">Enter your target and we'll show you exactly which genres and topics to write — ranked by how achievable your goal is in each one.</div>
+      </div>
+      <div class="card mb-4">
+        <form id="pg-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Monthly Income Target ($)</label>
+              <input id="pg-target" class="form-control" type="number" min="1" step="100" placeholder="e.g. 3000" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Books You Plan to Publish</label>
+              <input id="pg-books" class="form-control" type="number" min="1" max="50" value="3" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Price Per Book ($)</label>
+              <input id="pg-price" class="form-control" type="number" min="0.99" step="0.01" value="9.99" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Royalty Rate</label>
+              <select id="pg-royalty" class="form-control">
+                <option value="70">70% (KDP standard)</option>
+                <option value="35">35% (&lt;$2.99 or &gt;$9.99)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-accent btn-lg" style="width:100%">Show Me What to Write →</button>
+        </form>
+      </div>
+      <div id="pg-results">
+        <div class="empty-state">
+          <div class="empty-icon">💰</div>
+          <h3>Enter your income goal above</h3>
+          <p>We'll calculate exactly how many copies you need to sell per book and rank every genre by how realistic your target is — with specific topics to write.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Keyword Research ─────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-keywords">
+      <div class="card mb-4">
+        <form id="kw-form">
+          <div class="form-label">Enter a seed keyword or book topic</div>
+          <div class="search-box">
+            <input id="kw-input" type="text" placeholder="e.g. self help, cozy mystery, keto diet…" autocomplete="off" />
+            <button class="search-btn" type="submit">Research Keywords →</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Summary strip (hidden until results) -->
+      <div id="kw-summary" class="hidden mb-4">
+        <div class="grid mb-3" style="grid-template-columns:repeat(6,1fr)">
+          <div class="stat-card"><div class="stat-label">Total Monthly Searches</div><div class="stat-value" id="kw-stat-searches">—</div></div>
+          <div class="stat-card"><div class="stat-label">Avg Competition</div><div class="stat-value" id="kw-stat-competition">—</div></div>
+          <div class="stat-card"><div class="stat-label">Opportunity Score</div><div class="stat-value" id="kw-stat-opportunity">—</div></div>
+          <div class="stat-card"><div class="stat-label">Avg CPC</div><div class="stat-value" id="kw-stat-cpc">—</div></div>
+          <div class="stat-card"><div class="stat-label">Keywords Found</div><div class="stat-value" id="kw-stat-count">—</div></div>
+          <div class="stat-card"><div class="stat-label">Good for KDP Ads?</div><div class="stat-value" style="font-size:1rem" id="kw-stat-ads">—</div></div>
+        </div>
+        <div class="card mb-4">
+          <div class="card-header"><div class="card-title">Keyword Volume &amp; Competition Chart</div></div>
+          <div class="chart-container" style="height:240px"><canvas id="kw-chart"></canvas></div>
+        </div>
+      </div>
+
+      <div id="kw-results">
+        <div class="empty-state">
+          <div class="empty-icon">🔑</div>
+          <h3>Enter a keyword to get started</h3>
+          <p>We pull real Amazon autocomplete suggestions and enrich them with estimated search volume and competition scores.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BSR Calculator ───────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-bsr">
+      <div class="card mb-4">
+        <form id="bsr-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Best Seller Rank (BSR)</label>
+              <input id="bsr-input" class="form-control" type="number" min="1" placeholder="e.g. 15000" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select id="bsr-category" class="form-control">
+                <option value="kindle-ebooks">Kindle eBooks</option>
+                <option value="books">Books (Print)</option>
+                <option value="audible">Audible Books</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Book Price ($)</label>
+              <input id="bsr-price" class="form-control" type="number" min="0.99" step="0.01" value="9.99" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Royalty Rate (%)</label>
+              <select id="bsr-royalty" class="form-control">
+                <option value="70">70% (KDP standard)</option>
+                <option value="35">35% (under $2.99 or over $9.99)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg">Calculate Sales Estimate →</button>
+        </form>
+      </div>
+
+      <div id="bsr-output">
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <h3>Enter a BSR to estimate sales</h3>
+          <p>Uses the same BSR-to-sales algorithm used by Publisher Rocket and KDSpy, based on published research.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Category Explorer ────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-categories">
+      <!-- List view -->
+      <div id="cat-list-view">
+        <div class="section-header">
+          <div class="section-title">All Amazon Book Categories</div>
+          <div class="section-desc">Click any category to explore sub-categories with competition analysis</div>
+        </div>
+        <div id="cat-list-area">
+          <div class="loading-state"><div class="spinner"></div><span>Loading categories…</span></div>
+        </div>
+      </div>
+      <!-- Detail view -->
+      <div id="cat-detail-view" class="hidden">
+        <div class="section-header flex items-center gap-3">
+          <button id="cat-back-btn" class="btn btn-ghost btn-sm">← Back</button>
+          <div>
+            <div class="section-title" id="cat-detail-title">Category</div>
+            <div class="section-desc">Sub-category opportunities sorted by opportunity score</div>
+          </div>
+        </div>
+        <div id="cat-detail-area"></div>
+      </div>
+    </div>
+
+    <!-- ── Niche Finder ─────────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-niche">
+      <div class="card mb-4">
+        <form id="niche-form">
+          <div class="form-label">Enter a broad topic or genre to find profitable niches</div>
+          <div class="search-box">
+            <input id="niche-input" type="text" placeholder="e.g. mindfulness, cozy mystery, keto, fantasy…" autocomplete="off" />
+            <button class="search-btn" type="submit">Find Niches →</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="section-toolbar mb-3">
+        <span class="text-sm text-muted">View as:</span>
+        <button id="niche-view-grid"  class="btn btn-ghost btn-sm active">Grid</button>
+        <button id="niche-view-table" class="btn btn-ghost btn-sm">Table</button>
+        <button id="niche-view-chart" class="btn btn-ghost btn-sm">Scatter Chart</button>
+      </div>
+
+      <div id="niche-results">
+        <div class="empty-state">
+          <div class="empty-icon">🎯</div>
+          <h3>Enter a topic to find niches</h3>
+          <p>We analyze demand vs. competition to surface the best publishing opportunities, color-coded by opportunity tier.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── KDP Ads Keywords ──────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-ads">
+      <div class="card mb-4">
+        <form id="ads-form">
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label class="form-label">Book topic or seed keyword</label>
+              <input id="ads-input" class="form-control" type="text" placeholder="e.g. self help books, cozy mystery, keto diet cookbook…" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Daily Budget ($)</label>
+              <input id="ads-budget" class="form-control" type="number" min="1" step="0.5" value="10" />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg">Generate Ad Keywords →</button>
+        </form>
+      </div>
+      <div id="ads-results">
+        <div class="empty-state">
+          <div class="empty-icon">📣</div>
+          <h3>Generate KDP advertising keywords</h3>
+          <p>Get Broad, Phrase, and Exact match keywords with suggested bids and estimated clicks for your daily budget.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Market Overview ──────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-market">
+      <div id="market-results">
+        <div class="loading-state"><div class="spinner"></div><span>Loading market data…</span></div>
+      </div>
+    </div>
+
+    <!-- ── Low-Content Ideas ─────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-lowcontent">
+      <div class="card mb-4">
+        <form id="lc-form">
+          <div class="form-label">Optional: Enter a niche topic (leave blank for general ideas)</div>
+          <div class="search-box">
+            <input id="lc-input" type="text" placeholder="e.g. yoga, diabetes, dog lover, anxiety…" autocomplete="off" />
+            <button class="search-btn" type="submit">Generate Ideas →</button>
+          </div>
+        </form>
+        <div class="mt-3 flex gap-2 flex-wrap">
+          <span class="text-sm text-muted">Filter by type:</span>
+          <button id="lc-filter-all"      class="btn btn-ghost btn-sm active">All</button>
+          <button id="lc-filter-journal"  class="btn btn-ghost btn-sm">Journals</button>
+          <button id="lc-filter-planner"  class="btn btn-ghost btn-sm">Planners</button>
+          <button id="lc-filter-tracker"  class="btn btn-ghost btn-sm">Trackers</button>
+          <button id="lc-filter-activity" class="btn btn-ghost btn-sm">Activity Books</button>
+        </div>
+      </div>
+      <div id="lc-results">
+        <div class="loading-state"><div class="spinner"></div><span>Loading ideas…</span></div>
+      </div>
+    </div>
+
+    <!-- ── Book Analyzer ─────────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-book">
+      <div class="card mb-4">
+        <form id="book-form">
+          <div class="form-label">Enter an Amazon ASIN (10-character identifier)</div>
+          <div class="search-box">
+            <input id="book-asin" type="text" placeholder="e.g. B08XYZABCD" maxlength="10" style="font-family:monospace;font-size:1rem;letter-spacing:.05em" autocomplete="off" />
+            <button class="search-btn" type="submit">Analyze Book →</button>
+          </div>
+          <div class="text-xs text-muted mt-2">Find the ASIN in the Amazon product URL or in the "Product Details" section of any book listing.</div>
+        </form>
+      </div>
+      <div id="book-results">
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3>Enter an ASIN to analyze a book</h3>
+          <p>Get estimated BSR, monthly sales, revenue, competition score, and category intelligence for any Amazon book.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-content -->
+</main>
+
+<!-- ── Scripts ─────────────────────────────────────────────────────────────── -->
+<script src="js/api.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/tools/dashboard.js"></script>
+<script src="js/tools/profitgoal.js"></script>
+<script src="js/tools/keywords.js"></script>
+<script src="js/tools/bsr.js"></script>
+<script src="js/tools/categories.js"></script>
+<script src="js/tools/niche.js"></script>
+<script src="js/tools/ads.js"></script>
+<script src="js/tools/market.js"></script>
+<script src="js/tools/lowcontent.js"></script>
+<script src="js/tools/book.js"></script>
+<script src="js/app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    
+  }
+</script>
+</body>
+</html>
