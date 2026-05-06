@@ -41,4 +41,6 @@ const API = {
   book: {
     analyze: (asin) => apiFetch('/api/book/analyze', { asin }),
   },
+  profitGoal: (monthly_target, price, royalty, books) =>
+    apiFetch('/api/profit-goal', { monthly_target, price, royalty, books }),
 };

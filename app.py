@@ -406,6 +406,245 @@ async def analyze_book(asin: str = Query(..., min_length=10, max_length=10)):
         "note": "Estimates based on BSR algorithms. Real data requires Amazon PA API credentials.",
     }
 
+# ── Profit Goal Engine ───────────────────────────────────────────────────────
+
+# Curated niche recommendations per genre, with specificity that rivals pay for
+GENRE_OPPORTUNITIES = [
+    {
+        "id": "cozy-mystery",
+        "name": "Cozy Mystery",
+        "competition": 58,
+        "trend": "Rising",
+        "series_potential": "Very High",
+        "ku_compatible": True,
+        "avg_write_weeks": 8,
+        "achievable_bsr_range": [3_000, 25_000],
+        "topics": [
+            {"title": "Bakery/café amateur sleuth series", "demand": 88, "notes": "Readers buy entire series"},
+            {"title": "Retired detective in small coastal town", "demand": 82, "notes": "Ages 40+ demographic, very loyal"},
+            {"title": "Cat café murder mystery series", "demand": 80, "notes": "Pet + mystery crossover = double audience"},
+            {"title": "Bookshop owner solves local crimes", "demand": 78, "notes": "Meta appeal to book lovers"},
+            {"title": "Yarn shop / quilting circle mystery", "demand": 72, "notes": "Underserved niche, dedicated fans"},
+        ],
+    },
+    {
+        "id": "self-help",
+        "name": "Self-Help / Personal Development",
+        "competition": 72,
+        "trend": "Rising",
+        "series_potential": "High",
+        "ku_compatible": True,
+        "avg_write_weeks": 5,
+        "achievable_bsr_range": [2_000, 15_000],
+        "topics": [
+            {"title": "Anxiety relief workbook for adults (ages 25-45)", "demand": 92, "notes": "Workbooks sell at $12-18, high perceived value"},
+            {"title": "30-day habit tracker + journal combo", "demand": 87, "notes": "Seasonal peaks in Jan, Sep"},
+            {"title": "Boundaries and people-pleasing recovery", "demand": 85, "notes": "Social media-driven demand, trending topic"},
+            {"title": "ADHD productivity system for entrepreneurs", "demand": 83, "notes": "Underserved professional niche"},
+            {"title": "Dopamine detox and screen-time recovery", "demand": 80, "notes": "2024-2026 trending keyword cluster"},
+        ],
+    },
+    {
+        "id": "romance",
+        "name": "Clean / Wholesome Romance",
+        "competition": 65,
+        "trend": "Stable",
+        "series_potential": "Very High",
+        "ku_compatible": True,
+        "avg_write_weeks": 6,
+        "achievable_bsr_range": [1_500, 12_000],
+        "topics": [
+            {"title": "Small-town second-chance romance (firefighter/nurse)", "demand": 90, "notes": "Evergreen sub-genre, high KU page reads"},
+            {"title": "Grumpy sunshine forced proximity", "demand": 88, "notes": "#1 romance trope on BookTok right now"},
+            {"title": "Cowboy/rancher clean western romance", "demand": 82, "notes": "Older demographic, buys full series"},
+            {"title": "Sports romance (hockey player + rival's sister)", "demand": 85, "notes": "Very strong sub-community"},
+            {"title": "Fake dating small-town Christmas romance", "demand": 80, "notes": "Holiday releases spike sales 3x"},
+        ],
+    },
+    {
+        "id": "business-money",
+        "name": "Business & Entrepreneurship",
+        "competition": 68,
+        "trend": "Rising",
+        "series_potential": "Moderate",
+        "ku_compatible": False,
+        "avg_write_weeks": 7,
+        "achievable_bsr_range": [2_500, 20_000],
+        "topics": [
+            {"title": "AI tools for small business owners (practical guide)", "demand": 95, "notes": "2024-2026 peak demand window"},
+            {"title": "Etsy/side hustle to $5K/month step-by-step", "demand": 88, "notes": "Aspirational, specific, high conversion"},
+            {"title": "Real estate investing for W-2 employees", "demand": 85, "notes": "Perennial seller, high price tolerance"},
+            {"title": "Content creator monetization playbook", "demand": 83, "notes": "Growing niche, aspirational buyer"},
+            {"title": "Bookkeeping and taxes for freelancers", "demand": 80, "notes": "Annual repurchase potential"},
+        ],
+    },
+    {
+        "id": "science-fiction",
+        "name": "LitRPG / GameLit",
+        "competition": 45,
+        "trend": "Rising",
+        "series_potential": "Very High",
+        "ku_compatible": True,
+        "avg_write_weeks": 10,
+        "achievable_bsr_range": [2_000, 18_000],
+        "topics": [
+            {"title": "Cultivation / progression fantasy (isekai-adjacent)", "demand": 90, "notes": "Fastest growing SFF sub-genre on KU"},
+            {"title": "System apocalypse survival with stats", "demand": 87, "notes": "Strong series loyalty, daily KU readers"},
+            {"title": "Tower climb dungeon core fantasy", "demand": 83, "notes": "Sub-genre with dedicated subreddit community"},
+            {"title": "Solo leveling style manhwa-inspired novel", "demand": 82, "notes": "Anime crossover audience"},
+            {"title": "Virtual reality sports LitRPG", "demand": 75, "notes": "Underserved mashup niche"},
+        ],
+    },
+    {
+        "id": "children",
+        "name": "Children's Picture Books",
+        "competition": 55,
+        "trend": "Stable",
+        "series_potential": "High",
+        "ku_compatible": True,
+        "avg_write_weeks": 3,
+        "achievable_bsr_range": [5_000, 40_000],
+        "topics": [
+            {"title": "Emotions & feelings (anxiety, anger) for ages 3-6", "demand": 88, "notes": "Therapist/school recommended = bulk buys"},
+            {"title": "Bedtime routine + sleep books", "demand": 85, "notes": "Perennial gifted item, repeat purchase"},
+            {"title": "Diverse representation series (multicultural families)", "demand": 82, "notes": "Library purchasing programs"},
+            {"title": "STEM curiosity (female scientists/inventors)", "demand": 80, "notes": "Gift market + school market"},
+            {"title": "Potty training / first day of school milestone", "demand": 78, "notes": "Every parent buys at least once"},
+        ],
+    },
+    {
+        "id": "health-fitness",
+        "name": "Health & Wellness",
+        "competition": 62,
+        "trend": "Rising",
+        "series_potential": "Moderate",
+        "ku_compatible": False,
+        "avg_write_weeks": 6,
+        "achievable_bsr_range": [2_000, 18_000],
+        "topics": [
+            {"title": "Anti-inflammatory diet for beginners (30-day plan)", "demand": 90, "notes": "Perennial high seller with seasonal spikes"},
+            {"title": "Menopause nutrition and weight management", "demand": 88, "notes": "Underserved, high-paying demographic"},
+            {"title": "Strength training for women over 40", "demand": 85, "notes": "Fastest growing fitness demographic"},
+            {"title": "Gut health and microbiome reset protocol", "demand": 83, "notes": "TikTok/social-driven trend with longevity"},
+            {"title": "Low-carb / carnivore diet quick-start guide", "demand": 80, "notes": "Loyal community, buys multiple resources"},
+        ],
+    },
+    {
+        "id": "low-content",
+        "name": "Low-Content Books (Journals/Planners)",
+        "competition": 50,
+        "trend": "Rising",
+        "series_potential": "Very High",
+        "ku_compatible": False,
+        "avg_write_weeks": 1,
+        "achievable_bsr_range": [8_000, 60_000],
+        "topics": [
+            {"title": "Niche-themed gratitude journals (sobriety, grief, new moms)", "demand": 85, "notes": "Low competition in specific sub-niches"},
+            {"title": "Habit tracker + weekly planner combo (6-month)", "demand": 82, "notes": "Best-seller format, easy to publish at scale"},
+            {"title": "Grief journal for adults (lose a parent/spouse)", "demand": 80, "notes": "Very underserved emotional niche"},
+            {"title": "Business budget & goal tracker (entrepreneur edition)", "demand": 78, "notes": "High price tolerance, buy as gifts"},
+            {"title": "Teacher planner / classroom organizer", "demand": 75, "notes": "Annual repurchase, school gifting"},
+        ],
+    },
+]
+
+def bsr_from_monthly(monthly_sales: float) -> int:
+    a, b = 7440, 0.699
+    if monthly_sales <= 0:
+        return 9_999_999
+    return int((monthly_sales / a) ** (-1 / b))
+
+def achievability_label(required_bsr: int) -> tuple[str, int]:
+    if required_bsr < 1_000:
+        return "Very Hard", 20
+    elif required_bsr < 3_000:
+        return "Hard", 40
+    elif required_bsr < 8_000:
+        return "Moderate", 60
+    elif required_bsr < 25_000:
+        return "Achievable", 80
+    else:
+        return "Easy", 95
+
+@app.get("/api/profit-goal")
+async def profit_goal(
+    monthly_target: float = Query(..., ge=1, description="Desired monthly income in USD"),
+    price: float = Query(9.99, ge=0.99),
+    royalty: float = Query(0.70),
+    books: int = Query(1, ge=1, le=50, description="Number of books you plan to publish"),
+):
+    royalty_per = round(price * royalty, 2)
+    total_copies_needed = math.ceil(monthly_target / royalty_per)
+    copies_per_book = math.ceil(total_copies_needed / books)
+    required_bsr = bsr_from_monthly(copies_per_book)
+    achieve_label, achieve_score = achievability_label(required_bsr)
+
+    # Score each genre by how achievable the required BSR is within that genre
+    recommendations = []
+    for genre in GENRE_OPPORTUNITIES:
+        bsr_lo, bsr_hi = genre["achievable_bsr_range"]
+        if required_bsr < bsr_lo * 0.4:
+            fit_score = 22   # Needs top-0.5% performance — extremely ambitious
+        elif required_bsr < bsr_lo * 0.7:
+            fit_score = 40   # Top-performer territory — possible with great marketing
+        elif required_bsr <= bsr_lo:
+            fit_score = 62   # Strong performance needed but achievable
+        elif required_bsr <= bsr_hi:
+            # Within the genre's normal range — easy to very easy
+            pct = (required_bsr - bsr_lo) / (bsr_hi - bsr_lo)
+            fit_score = round(68 + 28 * pct)
+        else:
+            fit_score = 98   # Even an average book easily hits the goal
+        fit_score = min(98, max(10, fit_score))
+
+        recommendations.append({
+            "genre": genre["name"],
+            "genre_id": genre["id"],
+            "competition_score": genre["competition"],
+            "trend": genre["trend"],
+            "series_potential": genre["series_potential"],
+            "ku_compatible": genre["ku_compatible"],
+            "avg_weeks_to_write": genre["avg_write_weeks"],
+            "fit_score": fit_score,
+            "topics": genre["topics"],
+            "scenario": {
+                "books": books,
+                "copies_per_book_needed": copies_per_book,
+                "required_bsr_per_book": required_bsr,
+                "achievability": achieve_label,
+                "achievability_score": achieve_score,
+                "monthly_if_achieved": round(copies_per_book * books * royalty_per, 2),
+            },
+        })
+
+    recommendations.sort(key=lambda x: x["fit_score"], reverse=True)
+
+    # Build a plain-English summary
+    if achieve_score >= 80:
+        summary = f"Great news — selling {copies_per_book} copies/month per book at ${price} is very achievable for a new author."
+    elif achieve_score >= 60:
+        summary = f"Selling {copies_per_book} copies/month per book is realistic but will take 3–6 months of effort to reach."
+    else:
+        summary = f"Selling {copies_per_book} copies/month per book is ambitious. Consider a higher price or more books to make the goal easier."
+
+    return {
+        "goal": {
+            "monthly_target": monthly_target,
+            "price": price,
+            "royalty_rate": royalty,
+            "royalty_per_book": royalty_per,
+            "books_in_portfolio": books,
+            "total_copies_needed_monthly": total_copies_needed,
+            "copies_per_book_per_month": copies_per_book,
+            "required_bsr_per_book": required_bsr,
+            "achievability": achieve_label,
+            "achievability_score": achieve_score,
+            "summary": summary,
+        },
+        "top_genres": recommendations[:5],
+        "all_genres": recommendations,
+    }
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 if __name__ == "__main__":

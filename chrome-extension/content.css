@@ -1,0 +1,5 @@
+/* Scoped styles for the BookLaunch badge injected on Amazon pages */
+#blp-badge {
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+}

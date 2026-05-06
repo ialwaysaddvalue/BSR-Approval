@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BookLaunch Pro — KDP Research Suite</title>
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="BookLaunch" />
+  <link rel="manifest" href="/static/manifest.json" />
   <link rel="stylesheet" href="/static/css/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -26,6 +31,11 @@
     <div class="nav-item active" data-tool="dashboard">
       <span class="nav-icon">🏠</span>
       <span>Dashboard</span>
+    </div>
+    <div class="nav-item" data-tool="profit-goal">
+      <span class="nav-icon">💰</span>
+      <span>Profit Goal</span>
+      <span class="nav-badge">New</span>
     </div>
     <div class="nav-item" data-tool="market">
       <span class="nav-icon">📈</span>
@@ -96,6 +106,47 @@
     <div class="tool-panel" id="panel-dashboard">
       <div id="dashboard-content">
         <div class="loading-state"><div class="spinner"></div><span>Loading dashboard…</span></div>
+      </div>
+    </div>
+
+    <!-- ── Profit Goal ──────────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-profit-goal">
+      <div class="section-header">
+        <div class="section-title">💰 What's Your Monthly Income Goal?</div>
+        <div class="section-desc">Enter your target and we'll show you exactly which genres and topics to write — ranked by how achievable your goal is in each one.</div>
+      </div>
+      <div class="card mb-4">
+        <form id="pg-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Monthly Income Target ($)</label>
+              <input id="pg-target" class="form-control" type="number" min="1" step="100" placeholder="e.g. 3000" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Books You Plan to Publish</label>
+              <input id="pg-books" class="form-control" type="number" min="1" max="50" value="3" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Price Per Book ($)</label>
+              <input id="pg-price" class="form-control" type="number" min="0.99" step="0.01" value="9.99" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Royalty Rate</label>
+              <select id="pg-royalty" class="form-control">
+                <option value="70">70% (KDP standard)</option>
+                <option value="35">35% (&lt;$2.99 or &gt;$9.99)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-accent btn-lg" style="width:100%">Show Me What to Write →</button>
+        </form>
+      </div>
+      <div id="pg-results">
+        <div class="empty-state">
+          <div class="empty-icon">💰</div>
+          <h3>Enter your income goal above</h3>
+          <p>We'll calculate exactly how many copies you need to sell per book and rank every genre by how realistic your target is — with specific topics to write.</p>
+        </div>
       </div>
     </div>
 
@@ -316,6 +367,7 @@
 <script src="/static/js/api.js"></script>
 <script src="/static/js/utils.js"></script>
 <script src="/static/js/tools/dashboard.js"></script>
+<script src="/static/js/tools/profitgoal.js"></script>
 <script src="/static/js/tools/keywords.js"></script>
 <script src="/static/js/tools/bsr.js"></script>
 <script src="/static/js/tools/categories.js"></script>
@@ -325,5 +377,10 @@
 <script src="/static/js/tools/lowcontent.js"></script>
 <script src="/static/js/tools/book.js"></script>
 <script src="/static/js/app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/static/sw.js').catch(() => {});
+  }
+</script>
 </body>
 </html>

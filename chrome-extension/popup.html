@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookLaunch Pro</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">B</div>
+    <div>
+      <div class="logo-name">BookLaunch Pro</div>
+      <div class="logo-sub">KDP Research</div>
+    </div>
+  </div>
+  <a class="open-full" id="open-full-app" href="#" title="Open full app">⬡ Full App</a>
+</div>
+
+<!-- Page detected banner -->
+<div id="page-banner" class="page-banner hidden"></div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" data-tab="bsr">BSR Calc</button>
+  <button class="tab" data-tab="keywords">Keywords</button>
+  <button class="tab" data-tab="goal">Profit Goal</button>
+  <button class="tab" data-tab="book">Book Data</button>
+</div>
+
+<!-- ── BSR Calculator ── -->
+<div class="tab-panel active" id="tab-bsr">
+  <div class="field-row">
+    <div class="field">
+      <label>BSR</label>
+      <input id="bsr-input" type="number" min="1" placeholder="e.g. 15000" />
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="bsr-cat">
+        <option value="kindle">Kindle eBooks</option>
+        <option value="print">Print Books</option>
+      </select>
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Price ($)</label>
+      <input id="bsr-price" type="number" step="0.01" value="9.99" />
+    </div>
+    <div class="field">
+      <label>Royalty</label>
+      <select id="bsr-royalty">
+        <option value="0.70">70%</option>
+        <option value="0.35">35%</option>
+      </select>
+    </div>
+  </div>
+  <button class="btn-primary" id="bsr-calc-btn">Calculate →</button>
+  <div id="bsr-result" class="result-area"></div>
+</div>
+
+<!-- ── Keyword Research ── -->
+<div class="tab-panel" id="tab-keywords">
+  <div class="field">
+    <label>Seed keyword or topic</label>
+    <div class="search-row">
+      <input id="kw-input" type="text" placeholder="e.g. cozy mystery, keto diet…" />
+      <button class="btn-primary" id="kw-btn">Go</button>
+    </div>
+  </div>
+  <div id="kw-result" class="result-area"></div>
+</div>
+
+<!-- ── Profit Goal ── -->
+<div class="tab-panel" id="tab-goal">
+  <div class="field-row">
+    <div class="field">
+      <label>Monthly Income Goal ($)</label>
+      <input id="pg-target" type="number" min="1" placeholder="e.g. 3000" />
+    </div>
+    <div class="field">
+      <label>Books to Publish</label>
+      <input id="pg-books" type="number" min="1" value="3" />
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Price ($)</label>
+      <input id="pg-price" type="number" step="0.01" value="9.99" />
+    </div>
+    <div class="field">
+      <label>Royalty</label>
+      <select id="pg-royalty">
+        <option value="0.70">70%</option>
+        <option value="0.35">35%</option>
+      </select>
+    </div>
+  </div>
+  <button class="btn-primary" id="pg-btn">Find My Genres →</button>
+  <div id="pg-result" class="result-area"></div>
+</div>
+
+<!-- ── Book Data (current page) ── -->
+<div class="tab-panel" id="tab-book">
+  <div class="field">
+    <label>ASIN (10 characters)</label>
+    <div class="search-row">
+      <input id="book-asin-input" type="text" maxlength="10" placeholder="Auto-detected on Amazon" style="font-family:monospace" />
+      <button class="btn-primary" id="book-btn">Analyze</button>
+    </div>
+  </div>
+  <div id="book-result" class="result-area"></div>
+</div>
+
+<div class="footer">
+  <span>No subscription. No limits.</span>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

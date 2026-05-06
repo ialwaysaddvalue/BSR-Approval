@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "BookLaunch Pro",
+  "version": "1.0.0",
+  "description": "BSR calculator, keyword research, and live Amazon book analysis. Free alternative to KDSpy, Publisher Rocket & Book Beam.",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": [
+    "https://www.amazon.com/*",
+    "https://completion.amazon.com/*",
+    "http://localhost:8000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "BookLaunch Pro"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.amazon.com/dp/*",
+        "https://www.amazon.com/*/dp/*",
+        "https://www.amazon.com/s*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16":  "icons/icon.svg",
+    "48":  "icons/icon.svg",
+    "128": "icons/icon.svg"
+  }
+}

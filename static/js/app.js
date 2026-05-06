@@ -1,15 +1,16 @@
 // ── Navigation ────────────────────────────────────────────────────────────────
 
 const TOOLS = {
-  dashboard:    { title: 'Dashboard',           subtitle: 'Market overview & quick access' },
-  'keywords':   { title: 'Keyword Research',    subtitle: 'Discover high-value Amazon book keywords' },
-  'bsr':        { title: 'BSR Calculator',      subtitle: 'Convert Best Seller Rank to estimated monthly sales' },
-  'categories': { title: 'Category Explorer',   subtitle: 'Browse all Amazon book categories with competition data' },
-  'niche':      { title: 'Niche Finder',        subtitle: 'Identify low-competition, high-demand niches' },
-  'ads':        { title: 'KDP Ads Keywords',    subtitle: 'Build winning Amazon Ads keyword campaigns' },
-  'market':     { title: 'Market Overview',     subtitle: 'Genre trends, competition, and revenue data' },
-  'lowcontent': { title: 'Low-Content Ideas',   subtitle: 'Journals, planners, notebooks and more' },
-  'book':       { title: 'Book Analyzer',       subtitle: 'Analyze any book by ASIN' },
+  dashboard:     { title: 'Dashboard',           subtitle: 'Market overview & quick access' },
+  'profit-goal': { title: 'Profit Goal',         subtitle: 'Tell us your target income — get specific genres & topics to write' },
+  'keywords':    { title: 'Keyword Research',    subtitle: 'Discover high-value Amazon book keywords' },
+  'bsr':         { title: 'BSR Calculator',      subtitle: 'Convert Best Seller Rank to estimated monthly sales' },
+  'categories':  { title: 'Category Explorer',   subtitle: 'Browse all Amazon book categories with competition data' },
+  'niche':       { title: 'Niche Finder',        subtitle: 'Identify low-competition, high-demand niches' },
+  'ads':         { title: 'KDP Ads Keywords',    subtitle: 'Build winning Amazon Ads keyword campaigns' },
+  'market':      { title: 'Market Overview',     subtitle: 'Genre trends, competition, and revenue data' },
+  'lowcontent':  { title: 'Low-Content Ideas',   subtitle: 'Journals, planners, notebooks and more' },
+  'book':        { title: 'Book Analyzer',       subtitle: 'Analyze any book by ASIN' },
 };
 
 let activeNav = 'dashboard';
@@ -45,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Init all tools
+  initProfitGoal();
   initKeywords();
   initBsr();
   initCategories();
