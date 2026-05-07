@@ -78,7 +78,7 @@ function renderCategoryDetail(d) {
       <div class="card-header">
         <div>
           <div class="card-title">Sub-Category Opportunities</div>
-          <div class="card-subtitle">Sorted by opportunity score — highest first</div>
+          <div class="card-subtitle">Sorted by opportunity score — highest first. Click "Research →" to explore any sub-niche.</div>
         </div>
       </div>
       <div class="table-wrap">
@@ -91,7 +91,8 @@ function renderCategoryDetail(d) {
             <th>Top-100 BSR</th>
             <th>Monthly Rev Potential</th>
             <th>Trend</th>
-            <th></th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr></thead>
           <tbody>
             ${d.subcategories.map(s => `
@@ -104,9 +105,21 @@ function renderCategoryDetail(d) {
                 <td>${fmtMoney(s.est_monthly_revenue)}</td>
                 <td>${trendBadge(s.trend)}</td>
                 <td>${s.recommended ? badge('Recommended', 'green') : ''}</td>
+                <td>
+                  <button class="action-btn" onclick="catResearchNiche(${JSON.stringify(escHtml(s.name))})">Research →</button>
+                </td>
               </tr>`).join('')}
           </tbody>
         </table>
       </div>
     </div>`;
+}
+
+function catResearchNiche(subCatName) {
+  navigate('niche');
+  const input = document.getElementById('niche-input');
+  if (input) {
+    input.value = subCatName;
+    setTimeout(() => runNicheSearch(subCatName), 100);
+  }
 }

@@ -5,26 +5,57 @@ function initLowContent() {
     await runLowContentSearch(topic);
   });
 
-  document.getElementById('lc-filter-all').addEventListener('click', () => filterLcType('all'));
-  document.getElementById('lc-filter-journal').addEventListener('click', () => filterLcType('Journal'));
-  document.getElementById('lc-filter-planner').addEventListener('click', () => filterLcType('Planner'));
-  document.getElementById('lc-filter-tracker').addEventListener('click', () => filterLcType('Tracker'));
-  document.getElementById('lc-filter-activity').addEventListener('click', () => filterLcType('Activity'));
+  // All filter buttons
+  const filterMap = {
+    'lc-filter-all':      'all',
+    'lc-filter-journal':  'Journal',
+    'lc-filter-planner':  'Planner',
+    'lc-filter-tracker':  'Tracker',
+    'lc-filter-activity': 'Activity',
+    'lc-filter-notebook': 'Notebook',
+    'lc-filter-diary':    'Diary',
+    'lc-filter-workbook': 'Workbook',
+  };
+  Object.entries(filterMap).forEach(([btnId, typeVal]) => {
+    const el = document.getElementById(btnId);
+    if (el) el.addEventListener('click', () => filterLcType(typeVal));
+  });
+
+  // CSV download
+  const csvBtn = document.getElementById('lc-download-csv');
+  if (csvBtn) csvBtn.addEventListener('click', downloadLcCsv);
 
   // Load general ideas on init
   runLowContentSearch('');
 }
 
 let lastLcData = null;
+let currentLcFilter = 'all';
 
 function filterLcType(type) {
-  ['all','Journal','Planner','Tracker','Activity'].forEach(t => {
-    const key = t === 'all' ? 'all' : t.toLowerCase();
-    document.getElementById(`lc-filter-${key}`).classList.toggle('active', t === type);
+  currentLcFilter = type;
+
+  // Update active state on all filter buttons
+  const filterMap = {
+    'all':      'lc-filter-all',
+    'Journal':  'lc-filter-journal',
+    'Planner':  'lc-filter-planner',
+    'Tracker':  'lc-filter-tracker',
+    'Activity': 'lc-filter-activity',
+    'Notebook': 'lc-filter-notebook',
+    'Diary':    'lc-filter-diary',
+    'Workbook': 'lc-filter-workbook',
+  };
+  Object.entries(filterMap).forEach(([t, btnId]) => {
+    const el = document.getElementById(btnId);
+    if (el) el.classList.toggle('active', t === type);
   });
 
   if (!lastLcData) return;
-  const filtered = type === 'all' ? lastLcData.ideas : lastLcData.ideas.filter(i => i.type === type);
+  // Fixed filter: directly compare i.type === type
+  const filtered = type === 'all'
+    ? lastLcData.ideas
+    : lastLcData.ideas.filter(i => i.type === type);
   renderLcGrid(filtered);
 }
 
@@ -32,8 +63,13 @@ async function runLowContentSearch(topic) {
   const out = document.getElementById('lc-results');
   showLoading(out, 'Generating low-content book ideas…');
   try {
-    const data = await API.lowcontent.ideas(topic, 24);
+    const data = await API.lowcontent.ideas(topic, 48); // request more so filtering shows enough
     lastLcData = data;
+    currentLcFilter = 'all';
+    // Reset active filter buttons
+    document.querySelectorAll('[id^="lc-filter-"]').forEach(el => el.classList.remove('active'));
+    const allBtn = document.getElementById('lc-filter-all');
+    if (allBtn) allBtn.classList.add('active');
     renderLcPage(data);
   } catch (err) {
     showError(out, err.message);
@@ -60,6 +96,12 @@ function renderLcPage(data) {
 function renderLcGrid(ideas) {
   const grid = document.getElementById('lc-grid');
   if (!grid) return;
+
+  if (ideas.length === 0) {
+    grid.innerHTML = '<p class="text-muted text-sm" style="padding:16px">No ideas match this filter. Try a different type or clear the filter.</p>';
+    return;
+  }
+
   grid.innerHTML = `
     <div class="lc-grid">
       ${ideas.map(i => `
@@ -99,4 +141,31 @@ function renderLcGrid(ideas) {
           </div>
         </div>`).join('')}
     </div>`;
+}
+
+function downloadLcCsv() {
+  if (!lastLcData || !lastLcData.ideas.length) return;
+
+  const headers = ['Title','Type','Opportunity Score','Competition','Demand','Est. Monthly Sales','Recommended Price','Trim Size','Page Count','Recommended'];
+  const rows = lastLcData.ideas.map(i => [
+    `"${i.title.replace(/"/g, '""')}"`,
+    i.type,
+    i.opportunity_score,
+    i.competition_score,
+    i.demand_score,
+    i.est_monthly_sales,
+    i.recommended_price,
+    i.trim_size,
+    i.page_count,
+    i.recommended ? 'Yes' : 'No',
+  ].join(','));
+
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `low-content-ideas-${(lastLcData.topic || 'general').toLowerCase().replace(/\s+/g,'-')}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 }

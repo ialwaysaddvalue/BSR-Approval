@@ -8,7 +8,7 @@ function initNiche() {
     await runNicheSearch(q);
   });
 
-  document.getElementById('niche-view-grid').addEventListener('click', () => setNicheView('grid'));
+  document.getElementById('niche-view-grid').addEventListener('click',  () => setNicheView('grid'));
   document.getElementById('niche-view-table').addEventListener('click', () => setNicheView('table'));
   document.getElementById('niche-view-chart').addEventListener('click', () => setNicheView('chart'));
 }
@@ -63,7 +63,8 @@ function renderNicheResults(data) {
         <div class="card-header"><div class="card-title">Demand vs. Competition Matrix</div><div class="card-subtitle">Upper-left = best opportunities</div></div>
         <div class="chart-container" style="height:380px"><canvas id="niche-scatter-chart"></canvas></div>
       </div>`;
-    renderNicheChart(data.niches);
+    // Delay ensures canvas is in DOM and panel is visible before Chart.js renders
+    setTimeout(() => renderNicheChart(data.niches), 50);
   }
 }
 
@@ -94,7 +95,25 @@ function nicheCard(n) {
         ${trendBadge(n.trend)}
         <span class="badge badge-gray">~${n.avg_reviews_top_10} avg reviews</span>
       </div>
+      <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+        <button class="action-btn" onclick="nicheToKeywords(${JSON.stringify(escHtml(n.niche))})">🔑 Find Keywords</button>
+        <button class="action-btn" onclick="nicheToCategories(${JSON.stringify(escHtml(n.niche))})">→ See in Categories</button>
+      </div>
     </div>`;
+}
+
+function nicheToKeywords(nicheName) {
+  navigate('keywords');
+  const input = document.getElementById('kw-input');
+  if (input) {
+    input.value = nicheName;
+    setTimeout(() => runKeywordResearch(nicheName), 100);
+  }
+}
+
+function nicheToCategories(nicheName) {
+  navigate('categories');
+  // Categories shows the full list — user can then browse from there
 }
 
 function nicheTable(niches) {
@@ -135,7 +154,7 @@ function nicheTable(niches) {
 function renderNicheChart(niches) {
   const ctx = document.getElementById('niche-scatter-chart');
   if (!ctx) return;
-  if (nicheChart) nicheChart.destroy();
+  if (nicheChart) { nicheChart.destroy(); nicheChart = null; }
 
   const colorMap = { Green: 'rgba(16,185,129,0.8)', Yellow: 'rgba(245,158,11,0.8)', Red: 'rgba(239,68,68,0.8)' };
 

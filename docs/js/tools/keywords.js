@@ -20,27 +20,38 @@ async function runKeywordResearch(q) {
 
     // Update summary strip
     const s = data.summary;
-    document.getElementById('kw-stat-searches').textContent = fmtNum(s.total_monthly_searches);
+    document.getElementById('kw-stat-searches').textContent    = fmtNum(s.total_monthly_searches);
     document.getElementById('kw-stat-competition').textContent = s.avg_competition_score;
     document.getElementById('kw-stat-opportunity').textContent = s.opportunity_score;
-    document.getElementById('kw-stat-cpc').textContent = fmtMoney(s.avg_cpc);
-    document.getElementById('kw-stat-count').textContent = s.keyword_count;
-    document.getElementById('kw-stat-ads').textContent = s.kdp_ads_recommended ? 'Yes ✓' : 'Borderline';
+    document.getElementById('kw-stat-cpc').textContent         = fmtMoney(s.avg_cpc);
+    document.getElementById('kw-stat-count').textContent       = s.keyword_count;
+    document.getElementById('kw-stat-ads').textContent         = s.kdp_ads_recommended ? 'Yes ✓' : 'Borderline';
     summary.classList.remove('hidden');
 
-    // Render chart (canvas stays in summary div, safe from innerHTML replacement)
-    renderKwChart(data.keywords.slice(0, 12));
+    // Render chart — canvas lives in summary div, safe from innerHTML replacement below
+    setTimeout(() => renderKwChart(data.keywords.slice(0, 12)), 50);
 
-    // Render tabs + tables into results
+    // Render tabs + copy button + tables into results
     results.innerHTML = `
       <div class="tabs" id="kw-tabs">
         <button class="tab-btn active" onclick="kwSwitchTab('all',this)">All Keywords (${data.keywords.length})</button>
         <button class="tab-btn" onclick="kwSwitchTab('long',this)">Long Tail (${data.long_tail.length})</button>
         <button class="tab-btn" onclick="kwSwitchTab('broad',this)">Broad (${data.broad.length})</button>
       </div>
+
+      <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:10px">
+        <button id="kw-copy-btn" class="btn btn-ghost btn-sm" onclick="copyAllKeywords()">
+          📋 Copy all keywords to clipboard
+        </button>
+      </div>
+
       <div id="kw-panel-all">${buildKwTable(data.keywords)}</div>
       <div id="kw-panel-long" class="hidden">${buildKwTable(data.long_tail)}</div>
       <div id="kw-panel-broad" class="hidden">${buildKwTable(data.broad)}</div>`;
+
+    // Store keywords on the element for clipboard access
+    document.getElementById('kw-copy-btn').dataset.keywords = data.keywords.map(k => k.keyword).join('\n');
+
   } catch (err) {
     showError(results, 'Error: ' + err.message);
     summary.classList.add('hidden');
@@ -53,6 +64,29 @@ function kwSwitchTab(tab, btn) {
   });
   btn.closest('#kw-tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+}
+
+function copyAllKeywords() {
+  const btn = document.getElementById('kw-copy-btn');
+  if (!btn) return;
+  const text = btn.dataset.keywords || '';
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  }).catch(() => {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const orig = btn.textContent;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  });
 }
 
 function buildKwTable(keywords) {
@@ -69,6 +103,7 @@ function buildKwTable(keywords) {
             <th>Opportunity</th>
             <th>Avg CPC</th>
             <th>Type</th>
+            <th>Actions</th>
           </tr></thead>
           <tbody>
             ${keywords.map(k => `
@@ -79,6 +114,9 @@ function buildKwTable(keywords) {
                 <td>${scoreBar(k.opportunity_score)}</td>
                 <td>$${k.avg_cpc.toFixed(2)}</td>
                 <td>${badge(k.type === 'long_tail' ? 'Long Tail' : 'Broad', k.type === 'long_tail' ? 'blue' : 'gray')}</td>
+                <td>
+                  <button class="action-btn" onclick="kwResearchNiche(${JSON.stringify(escHtml(k.keyword))})">🔍 Research</button>
+                </td>
               </tr>`).join('')}
           </tbody>
         </table>
@@ -86,10 +124,20 @@ function buildKwTable(keywords) {
     </div>`;
 }
 
+function kwResearchNiche(keyword) {
+  navigate('niche');
+  const input = document.getElementById('niche-input');
+  if (input) {
+    input.value = keyword;
+    // Trigger search after a brief delay to allow panel to show
+    setTimeout(() => runNicheSearch(keyword), 100);
+  }
+}
+
 function renderKwChart(keywords) {
   const ctx = document.getElementById('kw-chart');
   if (!ctx) return;
-  if (kwChart) kwChart.destroy();
+  if (kwChart) { kwChart.destroy(); kwChart = null; }
   kwChart = new Chart(ctx, {
     type: 'bar',
     data: {

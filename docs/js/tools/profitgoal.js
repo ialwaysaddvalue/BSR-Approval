@@ -25,6 +25,7 @@ function renderProfitGoal(d) {
   const out = document.getElementById('pg-results');
   const g = d.goal;
   const achColor = scoreColor(g.achievability_score);
+  const royaltyPer = g.royalty_per_book;
 
   out.innerHTML = `
     <!-- ── Goal Summary ── -->
@@ -51,6 +52,9 @@ function renderProfitGoal(d) {
         ${pgStat('Books in Portfolio', g.books_in_portfolio, '📖')}
       </div>
     </div>
+
+    <!-- ── Scenario Comparison ── -->
+    ${renderScenarioComparison(g.monthly_target, g.price, royaltyPer)}
 
     <!-- ── Top Genre Picks ── -->
     <div class="card mb-4">
@@ -90,9 +94,64 @@ function renderProfitGoal(d) {
     </div>`;
 }
 
+// ── Scenario Comparison ───────────────────────────────────────────────────────
+function renderScenarioComparison(monthlyTarget, price, royaltyPer) {
+  const counts = [1, 3, 5, 10];
+  const a = 7440, b = 0.699;
+
+  function calcScenario(numBooks) {
+    const copiesPerBook = Math.ceil(monthlyTarget / (royaltyPer * numBooks));
+    const requiredBsr   = copiesPerBook <= 0 ? 9999999 : Math.round(Math.pow(copiesPerBook / a, -1 / b));
+    let achievability;
+    if      (requiredBsr <  1000) achievability = { label: 'Very Hard',  color: 'var(--red)',    score: 20 };
+    else if (requiredBsr <  3000) achievability = { label: 'Hard',       color: 'var(--red)',    score: 40 };
+    else if (requiredBsr <  8000) achievability = { label: 'Moderate',   color: 'var(--yellow)', score: 60 };
+    else if (requiredBsr < 25000) achievability = { label: 'Achievable', color: 'var(--green)',  score: 80 };
+    else                          achievability = { label: 'Easy',       color: 'var(--green)',  score: 95 };
+    return { numBooks, copiesPerBook, requiredBsr, achievability };
+  }
+
+  const rows = counts.map(n => {
+    const s = calcScenario(n);
+    return `<tr>
+      <td class="font-bold text-center">${s.numBooks} book${s.numBooks > 1 ? 's' : ''}</td>
+      <td class="text-center">${s.copiesPerBook} copies/mo per book</td>
+      <td class="text-center font-bold">#${fmtNum(s.requiredBsr)}</td>
+      <td class="text-center">
+        <span style="font-weight:700;color:${s.achievability.color}">${s.achievability.label}</span>
+      </td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <div class="card mb-4">
+      <div class="card-header">
+        <div>
+          <div class="card-title">📊 Scenario Comparison</div>
+          <div class="card-subtitle">Same ${fmtMoney(monthlyTarget)}/mo target at ${fmtMoney(price)} price — how many books changes everything</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th style="text-align:center">Portfolio Size</th>
+            <th style="text-align:center">Sales Required per Book</th>
+            <th style="text-align:center">BSR Required per Book</th>
+            <th style="text-align:center">Achievability</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <div class="text-xs text-muted mt-3" style="padding:0 4px">
+        Publishing more books lowers the BSR required per book, making the goal much more achievable. A portfolio of 5-10 books is the sweet spot for most new authors.
+      </div>
+    </div>`;
+}
+
+// ── Genre Block ───────────────────────────────────────────────────────────────
 function genreBlock(genre, index, goal) {
   const fitColor = scoreColor(genre.fit_score);
-  const topTopic = genre.topics[0];
+  const timeToFirstDollar = genre.avg_weeks_to_write + 6; // write time + ~4-8 wks to publish & rank (avg 6)
   return `
     <div style="border:1.5px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px${index === 0 ? ';border-color:var(--green);background:#f0fdf4' : ''}">
       <div style="display:flex;align-items:flex-start;gap:16px">
@@ -108,10 +167,13 @@ function genreBlock(genre, index, goal) {
             ${genre.ku_compatible ? badge('KU Compatible', 'blue') : ''}
             ${badge(genre.series_potential + ' Series Potential', 'gray')}
           </div>
-          <div style="font-size:.8rem;color:var(--text-muted);margin-bottom:10px">
+          <div style="font-size:.8rem;color:var(--text-muted);margin-bottom:4px">
             Competition: ${genre.competition_score}/100 &nbsp;|&nbsp;
             ~${genre.avg_weeks_to_write} wks to write &nbsp;|&nbsp;
             Need BSR ≤ #${fmtNum(goal.required_bsr_per_book)} per book
+          </div>
+          <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:10px">
+            ⏱ Estimated time to first dollar: ~${timeToFirstDollar} weeks (${genre.avg_weeks_to_write} wks writing + 4–8 wks to publish &amp; rank)
           </div>
 
           <div style="font-size:.82rem;font-weight:700;margin-bottom:6px">Specific Topics to Write:</div>

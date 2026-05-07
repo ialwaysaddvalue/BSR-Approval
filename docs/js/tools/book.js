@@ -10,11 +10,14 @@ function initBook() {
   });
 }
 
+let lastBookData = null;
+
 async function runBookAnalysis(asin) {
   const out = document.getElementById('book-results');
   showLoading(out, `Analyzing ASIN ${asin}…`);
   try {
     const d = await API.book.analyze(asin);
+    lastBookData = d;
     renderBookResults(d);
   } catch (err) {
     showError(out, err.message);
@@ -25,6 +28,7 @@ function renderBookResults(d) {
   const out = document.getElementById('book-results');
   const opp = d.opportunity_score;
   const oppColor = scoreColor(opp);
+  const firstCategory = d.categories && d.categories.length > 0 ? d.categories[0] : '';
 
   out.innerHTML = `
     <div class="card mb-4">
@@ -43,7 +47,7 @@ function renderBookResults(d) {
         ${bStatBlock('Monthly Revenue', fmtMoney(d.estimated_monthly_revenue))}
       </div>
 
-      <div class="grid grid-2">
+      <div class="grid grid-2 mb-4">
         <div>
           <div class="text-xs text-muted mb-1">Opportunity Score</div>
           ${scoreBar(d.opportunity_score)}
@@ -57,6 +61,16 @@ function renderBookResults(d) {
           ${bookRow('Page Count', d.page_count + ' pages')}
         </div>
       </div>
+
+      <!-- Action buttons -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--border)">
+        <button class="btn btn-ghost btn-sm" onclick="bookResearchNiche(${JSON.stringify(escHtml(firstCategory))})">
+          🔍 Research this niche
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="bookFindKeywords(${JSON.stringify(escHtml(firstCategory))})">
+          🔑 Find keywords for this niche
+        </button>
+      </div>
     </div>
 
     <div class="card">
@@ -64,7 +78,30 @@ function renderBookResults(d) {
       <div style="display:flex;flex-wrap:wrap;gap:8px">
         ${d.categories.map(c => `<span class="badge badge-blue">${escHtml(c)}</span>`).join('')}
       </div>
+      <div class="text-xs text-muted mt-3">
+        Use the Category Explorer to drill into these categories and find sub-niches with lower competition.
+      </div>
     </div>`;
+}
+
+function bookResearchNiche(categoryName) {
+  if (!categoryName) { navigate('niche'); return; }
+  navigate('niche');
+  const input = document.getElementById('niche-input');
+  if (input) {
+    input.value = categoryName;
+    setTimeout(() => runNicheSearch(categoryName), 100);
+  }
+}
+
+function bookFindKeywords(categoryName) {
+  if (!categoryName) { navigate('keywords'); return; }
+  navigate('keywords');
+  const input = document.getElementById('kw-input');
+  if (input) {
+    input.value = categoryName;
+    setTimeout(() => runKeywordResearch(categoryName), 100);
+  }
 }
 
 function bStatBlock(label, value) {

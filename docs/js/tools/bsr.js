@@ -11,6 +11,15 @@ function initBsr() {
     await runBsrCalc(bsr, category, price, royalty);
   });
 
+  // Reverse calculator form
+  document.getElementById('bsr-reverse-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const targetRev = parseFloat(document.getElementById('bsr-rev-target').value);
+    const royaltyPer = parseFloat(document.getElementById('bsr-rev-royalty').value);
+    if (!targetRev || !royaltyPer) return;
+    runReverseCalc(targetRev, royaltyPer);
+  });
+
   // Live price/royalty updates
   ['bsr-price','bsr-royalty'].forEach(id => {
     document.getElementById(id).addEventListener('input', debounce(rerunBsr, 600));
@@ -53,7 +62,6 @@ function renderBsrResults(d) {
   const output = document.getElementById('bsr-output');
   const opp = d.opportunity_score;
   const oppColor = scoreColor(opp);
-  const compColor = `var(--${compLevelColor(d.competition_level) === 'yellow' ? 'yellow' : compLevelColor(d.competition_level) === 'red' ? 'red' : 'green'})`;
 
   output.innerHTML = `
     <div class="grid grid-4 mb-4">
@@ -96,7 +104,7 @@ function renderBsrResults(d) {
       </div>
     </div>
 
-    <div class="card">
+    <div class="card mb-4">
       <div class="card-header">
         <div><div class="card-title">30-Day BSR Trend Simulation</div><div class="card-subtitle">Illustrative based on rank volatility patterns</div></div>
       </div>
@@ -115,6 +123,45 @@ function renderBsrResults(d) {
     </div>`;
 
   renderBsrTrend(d.bsr_trend);
+}
+
+// ── Reverse Calculator ────────────────────────────────────────────────────────
+function runReverseCalc(targetMonthlyRevenue, royaltyPerBook) {
+  const out = document.getElementById('bsr-reverse-output');
+  const a = 7440, b = 0.699;
+  const requiredSales = Math.ceil(targetMonthlyRevenue / royaltyPerBook);
+  // Invert: sales = a * bsr^(-b) → bsr = (sales/a)^(-1/b)
+  const requiredBsr = Math.round(Math.pow(requiredSales / a, -1 / b));
+
+  let difficulty, diffColor;
+  if      (requiredBsr <  1000) { difficulty = 'Very Hard';  diffColor = 'var(--red)'; }
+  else if (requiredBsr <  3000) { difficulty = 'Hard';       diffColor = 'var(--red)'; }
+  else if (requiredBsr <  8000) { difficulty = 'Moderate';   diffColor = 'var(--yellow)'; }
+  else if (requiredBsr < 25000) { difficulty = 'Achievable'; diffColor = 'var(--green)'; }
+  else                          { difficulty = 'Easy';       diffColor = 'var(--green)'; }
+
+  out.innerHTML = `
+    <div class="grid grid-3 mt-4">
+      <div style="text-align:center;padding:16px;background:#f8fafc;border-radius:8px">
+        <div class="text-xs text-muted mb-1 text-uppercase">Required Monthly Sales</div>
+        <div style="font-size:2rem;font-weight:900">${requiredSales}</div>
+        <div class="text-xs text-muted">copies per month</div>
+      </div>
+      <div style="text-align:center;padding:16px;background:#f8fafc;border-radius:8px">
+        <div class="text-xs text-muted mb-1">Required BSR</div>
+        <div style="font-size:2rem;font-weight:900">#${fmtNum(requiredBsr)}</div>
+        <div class="text-xs text-muted">to hit ${fmtMoney(targetMonthlyRevenue)}/mo</div>
+      </div>
+      <div style="text-align:center;padding:16px;background:#f8fafc;border-radius:8px">
+        <div class="text-xs text-muted mb-1">Achievability</div>
+        <div style="font-size:1.4rem;font-weight:900;color:${diffColor}">${difficulty}</div>
+        <div class="text-xs text-muted">${requiredBsr > 25000 ? 'Any new author can reach this' : requiredBsr > 8000 ? 'Realistic with good marketing' : requiredBsr > 3000 ? 'Requires solid launch strategy' : 'Very competitive — needs large audience'}</div>
+      </div>
+    </div>
+    <div class="alert alert-info mt-3" style="margin-bottom:0">
+      To earn <strong>${fmtMoney(targetMonthlyRevenue)}/month</strong> at <strong>${fmtMoney(royaltyPerBook)} royalty/sale</strong>, you need <strong>${requiredSales} sales/month</strong> — which requires maintaining a BSR around <strong>#${fmtNum(requiredBsr)}</strong>.
+      ${requiredBsr < 10000 ? 'Consider publishing multiple books to spread the sales requirement.' : 'This is very achievable with consistent marketing.'}
+    </div>`;
 }
 
 function statBlock(label, value, icon, bg) {
@@ -144,7 +191,7 @@ function benchmarkBlock(label, value, color = 'gray') {
 function renderBsrTrend(trend) {
   const ctx = document.getElementById('bsr-trend-chart');
   if (!ctx) return;
-  if (bsrTrendChart) bsrTrendChart.destroy();
+  if (bsrTrendChart) { bsrTrendChart.destroy(); bsrTrendChart = null; }
   bsrTrendChart = new Chart(ctx, {
     type: 'line',
     data: {

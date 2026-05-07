@@ -80,6 +80,18 @@
     </div>
   </div>
 
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Tools</div>
+    <div class="nav-item" data-tool="revenue">
+      <span class="nav-icon">💹</span>
+      <span>Revenue Projector</span>
+    </div>
+    <div class="nav-item" data-tool="quickref">
+      <span class="nav-icon">📋</span>
+      <span>KDP Reference</span>
+    </div>
+  </div>
+
   <div class="sidebar-footer">
     <div class="nav-item" style="font-size:.78rem">
       <span class="nav-icon">ℹ️</span>
@@ -227,6 +239,30 @@
           <p>Uses the same BSR-to-sales algorithm used by Publisher Rocket and KDSpy, based on published research.</p>
         </div>
       </div>
+
+      <!-- ── Reverse Calculator ── -->
+      <div class="card mt-4">
+        <div class="card-header">
+          <div>
+            <div class="card-title">🔄 Reverse Calculator — How many sales do I need?</div>
+            <div class="card-subtitle">Enter your revenue goal and royalty per book to find your required BSR</div>
+          </div>
+        </div>
+        <form id="bsr-reverse-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Target Monthly Revenue ($)</label>
+              <input id="bsr-rev-target" class="form-control" type="number" min="1" step="10" placeholder="e.g. 1000" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Royalty per Book ($)</label>
+              <input id="bsr-rev-royalty" class="form-control" type="number" min="0.01" step="0.01" placeholder="e.g. 6.99" />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Calculate Required BSR →</button>
+        </form>
+        <div id="bsr-reverse-output"></div>
+      </div>
     </div>
 
     <!-- ── Category Explorer ────────────────────────────────────────────────── -->
@@ -325,13 +361,17 @@
             <button class="search-btn" type="submit">Generate Ideas →</button>
           </div>
         </form>
-        <div class="mt-3 flex gap-2 flex-wrap">
+        <div class="mt-3 flex gap-2 flex-wrap" style="align-items:center">
           <span class="text-sm text-muted">Filter by type:</span>
           <button id="lc-filter-all"      class="btn btn-ghost btn-sm active">All</button>
           <button id="lc-filter-journal"  class="btn btn-ghost btn-sm">Journals</button>
           <button id="lc-filter-planner"  class="btn btn-ghost btn-sm">Planners</button>
           <button id="lc-filter-tracker"  class="btn btn-ghost btn-sm">Trackers</button>
           <button id="lc-filter-activity" class="btn btn-ghost btn-sm">Activity Books</button>
+          <button id="lc-filter-notebook" class="btn btn-ghost btn-sm">Notebooks</button>
+          <button id="lc-filter-diary"    class="btn btn-ghost btn-sm">Diaries</button>
+          <button id="lc-filter-workbook" class="btn btn-ghost btn-sm">Workbooks</button>
+          <button id="lc-download-csv"    class="btn btn-ghost btn-sm" style="margin-left:auto">💾 Download CSV</button>
         </div>
       </div>
       <div id="lc-results">
@@ -360,6 +400,20 @@
       </div>
     </div>
 
+    <!-- ── Revenue Projector ─────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-revenue">
+      <div id="revenue-content">
+        <div class="loading-state"><div class="spinner"></div><span>Loading Revenue Projector…</span></div>
+      </div>
+    </div>
+
+    <!-- ── KDP Quick Reference ───────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-quickref">
+      <div id="quickref-content">
+        <div class="loading-state"><div class="spinner"></div><span>Loading KDP Reference…</span></div>
+      </div>
+    </div>
+
   </div><!-- /page-content -->
 </main>
 
@@ -376,6 +430,8 @@
 <script src="js/tools/market.js"></script>
 <script src="js/tools/lowcontent.js"></script>
 <script src="js/tools/book.js"></script>
+<script src="js/tools/revenue.js"></script>
+<script src="js/tools/quickref.js"></script>
 <script src="js/app.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
