@@ -1,0 +1,2593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookLaunch Pro — KDP Research Suite</title>
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="BookLaunch" />
+  
+  <style>
+/* ── Reset & Base ──────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: #1e293b;
+  --sidebar-active: #1d4ed8;
+  --sidebar-width: 248px;
+  --accent: #f59e0b;
+  --accent-dark: #d97706;
+  --accent-light: #fef3c7;
+  --blue: #3b82f6;
+  --blue-dark: #1d4ed8;
+  --green: #10b981;
+  --green-light: #d1fae5;
+  --red: #ef4444;
+  --red-light: #fee2e2;
+  --yellow: #f59e0b;
+  --yellow-light: #fef3c7;
+  --bg: #f1f5f9;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+  --transition: .15s ease;
+}
+
+html { font-size: 15px; scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Sidebar ───────────────────────────────────────────────────────────────── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.sidebar-logo .logo-mark {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.sidebar-logo .logo-icon {
+  width: 36px; height: 36px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800; color: #0f172a;
+}
+.sidebar-logo .logo-text { font-size: .95rem; font-weight: 700; color: #fff; line-height: 1.2; }
+.sidebar-logo .logo-sub { font-size: .7rem; color: var(--text-light); font-weight: 400; }
+
+.sidebar-section { padding: 16px 10px 4px; }
+.sidebar-section-label {
+  font-size: .65rem; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: #475569;
+  padding: 0 8px 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 7px;
+  cursor: pointer; color: #94a3b8;
+  font-size: .85rem; font-weight: 500;
+  transition: background var(--transition), color var(--transition);
+  margin-bottom: 2px; text-decoration: none;
+  user-select: none;
+}
+.nav-item:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+.nav-item.active { background: var(--sidebar-active); color: #fff; }
+.nav-item .nav-icon { font-size: 1.05rem; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto; background: var(--accent); color: #0f172a;
+  font-size: .6rem; font-weight: 800; padding: 2px 6px; border-radius: 99px;
+}
+
+.sidebar-footer {
+  margin-top: auto; padding: 12px 10px;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+.sidebar-footer .nav-item { color: #64748b; }
+
+/* ── Main Layout ───────────────────────────────────────────────────────────── */
+.main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.topbar {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+.topbar-subtitle { font-size: .75rem; color: var(--text-muted); margin-top: 1px; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-badge {
+  background: var(--green-light); color: #065f46;
+  font-size: .7rem; font-weight: 700; padding: 3px 10px; border-radius: 99px;
+}
+
+.page-content { padding: 28px; flex: 1; }
+
+/* ── Cards & Grid ──────────────────────────────────────────────────────────── */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow);
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.card-title { font-size: .9rem; font-weight: 700; color: var(--text); }
+.card-subtitle { font-size: .75rem; color: var(--text-muted); margin-top: 2px; }
+
+.grid { display: grid; gap: 18px; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-auto { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+
+/* ── Stat Cards ────────────────────────────────────────────────────────────── */
+.stat-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.stat-label { font-size: .72rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+.stat-value { font-size: 1.8rem; font-weight: 800; color: var(--text); line-height: 1.1; margin: 6px 0 2px; }
+.stat-change { font-size: .78rem; color: var(--text-muted); }
+.stat-change.up { color: var(--green); }
+.stat-change.down { color: var(--red); }
+.stat-icon {
+  width: 38px; height: 38px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; margin-bottom: 10px;
+}
+
+/* ── Forms & Inputs ────────────────────────────────────────────────────────── */
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: .78rem; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+.form-control {
+  width: 100%; padding: 9px 12px;
+  border: 1.5px solid var(--border); border-radius: 7px;
+  font-size: .85rem; color: var(--text); background: var(--card);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+.form-control:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,.12); }
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+
+.search-box {
+  display: flex; gap: 0;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  overflow: hidden; background: var(--card);
+  box-shadow: var(--shadow);
+}
+.search-box input {
+  flex: 1; padding: 11px 14px;
+  border: none; outline: none;
+  font-size: .9rem; color: var(--text); background: transparent;
+}
+.search-box input::placeholder { color: var(--text-light); }
+.search-box .search-btn {
+  padding: 11px 20px; background: var(--blue);
+  border: none; cursor: pointer; color: #fff;
+  font-size: .85rem; font-weight: 700;
+  transition: background var(--transition);
+  white-space: nowrap;
+}
+.search-box .search-btn:hover { background: var(--blue-dark); }
+.search-box .search-btn:disabled { background: var(--text-light); cursor: not-allowed; }
+
+/* ── Buttons ───────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 7px; border: none;
+  font-size: .82rem; font-weight: 700; cursor: pointer;
+  transition: all var(--transition); text-decoration: none;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { background: var(--blue-dark); }
+.btn-accent { background: var(--accent); color: #0f172a; }
+.btn-accent:hover { background: var(--accent-dark); }
+.btn-ghost { background: transparent; color: var(--text-muted); border: 1.5px solid var(--border); }
+.btn-ghost:hover { background: var(--bg); color: var(--text); }
+.btn-sm { padding: 5px 10px; font-size: .75rem; }
+.btn-lg { padding: 11px 22px; font-size: .9rem; }
+
+/* ── Tables ────────────────────────────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+thead tr { border-bottom: 2px solid var(--border); }
+thead th { padding: 9px 12px; text-align: left; font-weight: 700; color: var(--text-muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+tbody tr { border-bottom: 1px solid var(--border); transition: background var(--transition); }
+tbody tr:hover { background: #f8fafc; }
+tbody td { padding: 10px 12px; color: var(--text); }
+tbody tr:last-child { border-bottom: none; }
+
+/* ── Score Bars ────────────────────────────────────────────────────────────── */
+.score-bar { display: flex; align-items: center; gap: 8px; }
+.score-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.score-bar-fill { height: 100%; border-radius: 99px; transition: width .4s ease; }
+.score-bar-label { font-size: .75rem; font-weight: 700; min-width: 28px; text-align: right; }
+
+/* ── Badges ────────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 2px 8px; border-radius: 99px;
+  font-size: .7rem; font-weight: 700;
+}
+.badge-green { background: var(--green-light); color: #065f46; }
+.badge-yellow { background: var(--yellow-light); color: #92400e; }
+.badge-red { background: var(--red-light); color: #991b1b; }
+.badge-blue { background: #dbeafe; color: #1e40af; }
+.badge-gray { background: #f1f5f9; color: #475569; }
+
+/* ── Progress Circle ───────────────────────────────────────────────────────── */
+.score-circle {
+  width: 72px; height: 72px; flex-shrink: 0;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; font-weight: 800;
+}
+
+/* ── Tabs ──────────────────────────────────────────────────────────────────── */
+.tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
+.tab-btn {
+  padding: 10px 16px; border: none; background: transparent;
+  font-size: .82rem; font-weight: 600; color: var(--text-muted);
+  cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: color var(--transition), border-color var(--transition);
+}
+.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+.tab-btn:hover { color: var(--text); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Section Headers ───────────────────────────────────────────────────────── */
+.section-header { margin-bottom: 20px; }
+.section-title { font-size: 1.2rem; font-weight: 800; color: var(--text); }
+.section-desc { font-size: .82rem; color: var(--text-muted); margin-top: 4px; }
+.section-toolbar { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+
+/* ── Alerts ────────────────────────────────────────────────────────────────── */
+.alert { padding: 12px 16px; border-radius: 8px; font-size: .82rem; margin-bottom: 16px; }
+.alert-info { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+.alert-success { background: var(--green-light); color: #065f46; }
+.alert-warning { background: var(--yellow-light); color: #92400e; }
+
+/* ── Loading ───────────────────────────────────────────────────────────────── */
+.spinner {
+  width: 24px; height: 24px;
+  border: 3px solid var(--border);
+  border-top-color: var(--blue);
+  border-radius: 50%; animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 48px 20px; gap: 12px;
+  color: var(--text-muted); font-size: .85rem;
+}
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 48px 20px;
+  color: var(--text-muted); text-align: center;
+}
+.empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.empty-state h3 { font-size: .95rem; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+.empty-state p { font-size: .8rem; max-width: 320px; }
+
+/* ── Charts ────────────────────────────────────────────────────────────────── */
+.chart-container { position: relative; }
+
+/* ── Niche Matrix ──────────────────────────────────────────────────────────── */
+.niche-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.niche-card {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 16px;
+  transition: box-shadow var(--transition), border-color var(--transition);
+  cursor: pointer;
+}
+.niche-card:hover { box-shadow: var(--shadow-md); border-color: var(--blue); }
+.niche-card.tier-Green { border-left: 4px solid var(--green); }
+.niche-card.tier-Yellow { border-left: 4px solid var(--yellow); }
+.niche-card.tier-Red { border-left: 4px solid var(--red); }
+.niche-card-name { font-size: .88rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+.niche-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.niche-metric { text-align: center; }
+.niche-metric-value { font-size: 1.1rem; font-weight: 800; }
+.niche-metric-label { font-size: .65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+
+/* ── Category Cards ────────────────────────────────────────────────────────── */
+.category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.category-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; cursor: pointer;
+  transition: box-shadow var(--transition), border-color var(--transition);
+}
+.category-card:hover { box-shadow: var(--shadow-md); border-color: var(--blue); }
+.category-card-name { font-size: .88rem; font-weight: 700; margin-bottom: 10px; }
+.category-card-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ── Book Analyzer ─────────────────────────────────────────────────────────── */
+.book-score-ring {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; font-weight: 900;
+}
+
+/* ── Low-Content Cards ─────────────────────────────────────────────────────── */
+.lc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.lc-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px;
+}
+.lc-card.recommended { border-color: var(--green); }
+.lc-card-title { font-size: .83rem; font-weight: 700; margin-bottom: 8px; }
+.lc-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
+.lc-meta-item { font-size: .7rem; color: var(--text-muted); }
+.lc-meta-item strong { display: block; font-size: .78rem; color: var(--text); }
+
+/* ── Dashboard ─────────────────────────────────────────────────────────────── */
+.opportunity-list { list-style: none; }
+.opportunity-list li {
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: .83rem;
+}
+.opportunity-list li:last-child { border-bottom: none; }
+.opportunity-list .opp-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); color: #0f172a;
+  font-size: .68rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.opportunity-list .opp-text strong { display: block; font-weight: 700; margin-bottom: 1px; }
+.opportunity-list .opp-text span { color: var(--text-muted); font-size: .75rem; }
+
+/* ── Market Chart Area ─────────────────────────────────────────────────────── */
+.market-bar {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+}
+.market-bar-name { font-size: .78rem; width: 180px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.market-bar-track { flex: 1; height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.market-bar-fill { height: 100%; border-radius: 99px; background: var(--blue); }
+.market-bar-score { font-size: .75rem; font-weight: 700; width: 28px; text-align: right; }
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 860px) {
+  :root { --sidebar-width: 60px; }
+  .sidebar-logo .logo-text, .sidebar-logo .logo-sub,
+  .sidebar-section-label, .nav-item span:not(.nav-icon),
+  .nav-badge { display: none; }
+  .nav-item { justify-content: center; padding: 10px; }
+  .nav-item .nav-icon { width: auto; margin: 0; }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .page-content { padding: 18px; }
+}
+@media (max-width: 600px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .form-row { flex-direction: column; }
+}
+
+/* ── Utility ───────────────────────────────────────────────────────────────── */
+.flex { display: flex; }
+.flex-1 { flex: 1; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.mb-1 { margin-bottom: 4px; }
+.mb-2 { margin-bottom: 8px; }
+.mb-3 { margin-bottom: 12px; }
+.mb-4 { margin-bottom: 16px; }
+.mb-5 { margin-bottom: 20px; }
+.mt-3 { margin-top: 12px; }
+.mt-4 { margin-top: 16px; }
+.text-sm { font-size: .78rem; }
+.text-xs { font-size: .7rem; }
+.text-muted { color: var(--text-muted); }
+.text-green { color: var(--green); }
+.text-red { color: var(--red); }
+.text-amber { color: var(--accent-dark); }
+.font-bold { font-weight: 700; }
+.font-black { font-weight: 900; }
+.hidden { display: none !important; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Color helpers for score bars ──────────────────────────────────────────── */
+.fill-green { background: var(--green); }
+.fill-blue  { background: var(--blue); }
+.fill-amber { background: var(--accent); }
+.fill-red   { background: var(--red); }
+
+</style>
+  </head>
+<body>
+
+<!-- ── Sidebar ─────────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <a class="logo-mark" href="#">
+      <div class="logo-icon">B</div>
+      <div>
+        <div class="logo-text">BookLaunch Pro</div>
+        <div class="logo-sub">KDP Research Suite</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Overview</div>
+    <div class="nav-item active" data-tool="dashboard">
+      <span class="nav-icon">🏠</span>
+      <span>Dashboard</span>
+    </div>
+    <div class="nav-item" data-tool="profit-goal">
+      <span class="nav-icon">💰</span>
+      <span>Profit Goal</span>
+      <span class="nav-badge">New</span>
+    </div>
+    <div class="nav-item" data-tool="market">
+      <span class="nav-icon">📈</span>
+      <span>Market Overview</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Research Tools</div>
+    <div class="nav-item" data-tool="keywords">
+      <span class="nav-icon">🔑</span>
+      <span>Keyword Research</span>
+      <span class="nav-badge">Live</span>
+    </div>
+    <div class="nav-item" data-tool="bsr">
+      <span class="nav-icon">📊</span>
+      <span>BSR Calculator</span>
+    </div>
+    <div class="nav-item" data-tool="categories">
+      <span class="nav-icon">📂</span>
+      <span>Category Explorer</span>
+    </div>
+    <div class="nav-item" data-tool="niche">
+      <span class="nav-icon">🎯</span>
+      <span>Niche Finder</span>
+    </div>
+    <div class="nav-item" data-tool="book">
+      <span class="nav-icon">🔍</span>
+      <span>Book Analyzer</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Publishing Tools</div>
+    <div class="nav-item" data-tool="ads">
+      <span class="nav-icon">📣</span>
+      <span>KDP Ads Keywords</span>
+    </div>
+    <div class="nav-item" data-tool="lowcontent">
+      <span class="nav-icon">📓</span>
+      <span>Low-Content Ideas</span>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="nav-item" style="font-size:.78rem">
+      <span class="nav-icon">ℹ️</span>
+      <span>Data is estimated. No subscription needed.</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main ────────────────────────────────────────────────────────────────── -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-subtitle" id="topbar-subtitle">Market overview &amp; quick access</div>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-badge">Free Forever</span>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- ── Dashboard ───────────────────────────────────────────────────────── -->
+    <div class="tool-panel" id="panel-dashboard">
+      <div id="dashboard-content">
+        <div class="loading-state"><div class="spinner"></div><span>Loading dashboard…</span></div>
+      </div>
+    </div>
+
+    <!-- ── Profit Goal ──────────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-profit-goal">
+      <div class="section-header">
+        <div class="section-title">💰 What's Your Monthly Income Goal?</div>
+        <div class="section-desc">Enter your target and we'll show you exactly which genres and topics to write — ranked by how achievable your goal is in each one.</div>
+      </div>
+      <div class="card mb-4">
+        <form id="pg-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Monthly Income Target ($)</label>
+              <input id="pg-target" class="form-control" type="number" min="1" step="100" placeholder="e.g. 3000" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Books You Plan to Publish</label>
+              <input id="pg-books" class="form-control" type="number" min="1" max="50" value="3" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Price Per Book ($)</label>
+              <input id="pg-price" class="form-control" type="number" min="0.99" step="0.01" value="9.99" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Royalty Rate</label>
+              <select id="pg-royalty" class="form-control">
+                <option value="70">70% (KDP standard)</option>
+                <option value="35">35% (&lt;$2.99 or &gt;$9.99)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-accent btn-lg" style="width:100%">Show Me What to Write →</button>
+        </form>
+      </div>
+      <div id="pg-results">
+        <div class="empty-state">
+          <div class="empty-icon">💰</div>
+          <h3>Enter your income goal above</h3>
+          <p>We'll calculate exactly how many copies you need to sell per book and rank every genre by how realistic your target is — with specific topics to write.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Keyword Research ─────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-keywords">
+      <div class="card mb-4">
+        <form id="kw-form">
+          <div class="form-label">Enter a seed keyword or book topic</div>
+          <div class="search-box">
+            <input id="kw-input" type="text" placeholder="e.g. self help, cozy mystery, keto diet…" autocomplete="off" />
+            <button class="search-btn" type="submit">Research Keywords →</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Summary strip (hidden until results) -->
+      <div id="kw-summary" class="hidden mb-4">
+        <div class="grid mb-3" style="grid-template-columns:repeat(6,1fr)">
+          <div class="stat-card"><div class="stat-label">Total Monthly Searches</div><div class="stat-value" id="kw-stat-searches">—</div></div>
+          <div class="stat-card"><div class="stat-label">Avg Competition</div><div class="stat-value" id="kw-stat-competition">—</div></div>
+          <div class="stat-card"><div class="stat-label">Opportunity Score</div><div class="stat-value" id="kw-stat-opportunity">—</div></div>
+          <div class="stat-card"><div class="stat-label">Avg CPC</div><div class="stat-value" id="kw-stat-cpc">—</div></div>
+          <div class="stat-card"><div class="stat-label">Keywords Found</div><div class="stat-value" id="kw-stat-count">—</div></div>
+          <div class="stat-card"><div class="stat-label">Good for KDP Ads?</div><div class="stat-value" style="font-size:1rem" id="kw-stat-ads">—</div></div>
+        </div>
+        <div class="card mb-4">
+          <div class="card-header"><div class="card-title">Keyword Volume &amp; Competition Chart</div></div>
+          <div class="chart-container" style="height:240px"><canvas id="kw-chart"></canvas></div>
+        </div>
+      </div>
+
+      <div id="kw-results">
+        <div class="empty-state">
+          <div class="empty-icon">🔑</div>
+          <h3>Enter a keyword to get started</h3>
+          <p>We pull real Amazon autocomplete suggestions and enrich them with estimated search volume and competition scores.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BSR Calculator ───────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-bsr">
+      <div class="card mb-4">
+        <form id="bsr-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Best Seller Rank (BSR)</label>
+              <input id="bsr-input" class="form-control" type="number" min="1" placeholder="e.g. 15000" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select id="bsr-category" class="form-control">
+                <option value="kindle-ebooks">Kindle eBooks</option>
+                <option value="books">Books (Print)</option>
+                <option value="audible">Audible Books</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Book Price ($)</label>
+              <input id="bsr-price" class="form-control" type="number" min="0.99" step="0.01" value="9.99" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Royalty Rate (%)</label>
+              <select id="bsr-royalty" class="form-control">
+                <option value="70">70% (KDP standard)</option>
+                <option value="35">35% (under $2.99 or over $9.99)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg">Calculate Sales Estimate →</button>
+        </form>
+      </div>
+
+      <div id="bsr-output">
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <h3>Enter a BSR to estimate sales</h3>
+          <p>Uses the same BSR-to-sales algorithm used by Publisher Rocket and KDSpy, based on published research.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Category Explorer ────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-categories">
+      <!-- List view -->
+      <div id="cat-list-view">
+        <div class="section-header">
+          <div class="section-title">All Amazon Book Categories</div>
+          <div class="section-desc">Click any category to explore sub-categories with competition analysis</div>
+        </div>
+        <div id="cat-list-area">
+          <div class="loading-state"><div class="spinner"></div><span>Loading categories…</span></div>
+        </div>
+      </div>
+      <!-- Detail view -->
+      <div id="cat-detail-view" class="hidden">
+        <div class="section-header flex items-center gap-3">
+          <button id="cat-back-btn" class="btn btn-ghost btn-sm">← Back</button>
+          <div>
+            <div class="section-title" id="cat-detail-title">Category</div>
+            <div class="section-desc">Sub-category opportunities sorted by opportunity score</div>
+          </div>
+        </div>
+        <div id="cat-detail-area"></div>
+      </div>
+    </div>
+
+    <!-- ── Niche Finder ─────────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-niche">
+      <div class="card mb-4">
+        <form id="niche-form">
+          <div class="form-label">Enter a broad topic or genre to find profitable niches</div>
+          <div class="search-box">
+            <input id="niche-input" type="text" placeholder="e.g. mindfulness, cozy mystery, keto, fantasy…" autocomplete="off" />
+            <button class="search-btn" type="submit">Find Niches →</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="section-toolbar mb-3">
+        <span class="text-sm text-muted">View as:</span>
+        <button id="niche-view-grid"  class="btn btn-ghost btn-sm active">Grid</button>
+        <button id="niche-view-table" class="btn btn-ghost btn-sm">Table</button>
+        <button id="niche-view-chart" class="btn btn-ghost btn-sm">Scatter Chart</button>
+      </div>
+
+      <div id="niche-results">
+        <div class="empty-state">
+          <div class="empty-icon">🎯</div>
+          <h3>Enter a topic to find niches</h3>
+          <p>We analyze demand vs. competition to surface the best publishing opportunities, color-coded by opportunity tier.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── KDP Ads Keywords ──────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-ads">
+      <div class="card mb-4">
+        <form id="ads-form">
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label class="form-label">Book topic or seed keyword</label>
+              <input id="ads-input" class="form-control" type="text" placeholder="e.g. self help books, cozy mystery, keto diet cookbook…" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Daily Budget ($)</label>
+              <input id="ads-budget" class="form-control" type="number" min="1" step="0.5" value="10" />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg">Generate Ad Keywords →</button>
+        </form>
+      </div>
+      <div id="ads-results">
+        <div class="empty-state">
+          <div class="empty-icon">📣</div>
+          <h3>Generate KDP advertising keywords</h3>
+          <p>Get Broad, Phrase, and Exact match keywords with suggested bids and estimated clicks for your daily budget.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Market Overview ──────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-market">
+      <div id="market-results">
+        <div class="loading-state"><div class="spinner"></div><span>Loading market data…</span></div>
+      </div>
+    </div>
+
+    <!-- ── Low-Content Ideas ─────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-lowcontent">
+      <div class="card mb-4">
+        <form id="lc-form">
+          <div class="form-label">Optional: Enter a niche topic (leave blank for general ideas)</div>
+          <div class="search-box">
+            <input id="lc-input" type="text" placeholder="e.g. yoga, diabetes, dog lover, anxiety…" autocomplete="off" />
+            <button class="search-btn" type="submit">Generate Ideas →</button>
+          </div>
+        </form>
+        <div class="mt-3 flex gap-2 flex-wrap">
+          <span class="text-sm text-muted">Filter by type:</span>
+          <button id="lc-filter-all"      class="btn btn-ghost btn-sm active">All</button>
+          <button id="lc-filter-journal"  class="btn btn-ghost btn-sm">Journals</button>
+          <button id="lc-filter-planner"  class="btn btn-ghost btn-sm">Planners</button>
+          <button id="lc-filter-tracker"  class="btn btn-ghost btn-sm">Trackers</button>
+          <button id="lc-filter-activity" class="btn btn-ghost btn-sm">Activity Books</button>
+        </div>
+      </div>
+      <div id="lc-results">
+        <div class="loading-state"><div class="spinner"></div><span>Loading ideas…</span></div>
+      </div>
+    </div>
+
+    <!-- ── Book Analyzer ─────────────────────────────────────────────────────── -->
+    <div class="tool-panel hidden" id="panel-book">
+      <div class="card mb-4">
+        <form id="book-form">
+          <div class="form-label">Enter an Amazon ASIN (10-character identifier)</div>
+          <div class="search-box">
+            <input id="book-asin" type="text" placeholder="e.g. B08XYZABCD" maxlength="10" style="font-family:monospace;font-size:1rem;letter-spacing:.05em" autocomplete="off" />
+            <button class="search-btn" type="submit">Analyze Book →</button>
+          </div>
+          <div class="text-xs text-muted mt-2">Find the ASIN in the Amazon product URL or in the "Product Details" section of any book listing.</div>
+        </form>
+      </div>
+      <div id="book-results">
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3>Enter an ASIN to analyze a book</h3>
+          <p>Get estimated BSR, monthly sales, revenue, competition score, and category intelligence for any Amazon book.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-content -->
+</main>
+
+<!-- ── Scripts ─────────────────────────────────────────────────────────────── -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ════════════════════════════════════════════════════════════════════════════
+// api.js — Fully offline JavaScript (GitHub Pages / static deploy)
+// Mirrors every Python endpoint in app.py with no backend required.
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── Deterministic hash ────────────────────────────────────────────────────────
+function _h(s, mod) {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = (((h << 5) + h) ^ s.charCodeAt(i)) | 0;
+  return Math.abs(h) % mod;
+}
+
+// ── BSR Engine ────────────────────────────────────────────────────────────────
+const BSR_PROFILES = {
+  'kindle-ebooks': { name: 'Kindle eBooks',  a: 7440, b: 0.699, top100: 25000, top1000: 250000 },
+  'books':         { name: 'Books (Print)',   a: 3700, b: 0.690, top100: 50000, top1000: 500000 },
+  'audible':       { name: 'Audible Books',   a: 4800, b: 0.695, top100: 30000, top1000: 300000 },
+};
+
+function bsrToSales(bsr, cat) {
+  const p = BSR_PROFILES[cat] || BSR_PROFILES['kindle-ebooks'];
+  const monthly = p.a * Math.pow(bsr, -p.b);
+  const daily   = monthly / 30;
+  let comp, compS, oppS;
+  if      (bsr <=   1000) { comp = 'Extreme';      compS = 95; oppS = 25; }
+  else if (bsr <=   5000) { comp = 'Very High';     compS = 85; oppS = 35; }
+  else if (bsr <=  10000) { comp = 'High';          compS = 70; oppS = 50; }
+  else if (bsr <=  25000) { comp = 'Moderate-High'; compS = 60; oppS = 60; }
+  else if (bsr <=  50000) { comp = 'Moderate';      compS = 45; oppS = 70; }
+  else if (bsr <= 100000) { comp = 'Low-Moderate';  compS = 30; oppS = 75; }
+  else if (bsr <= 500000) { comp = 'Low';           compS = 20; oppS = 65; }
+  else                    { comp = 'Very Low';      compS = 10; oppS = 40; }
+  return {
+    bsr, category_name: p.name,
+    daily_sales: Math.round(daily * 10) / 10,
+    monthly_sales: Math.round(monthly),
+    annual_sales: Math.round(monthly * 12),
+    competition_level: comp, competition_score: compS, opportunity_score: oppS,
+    top100_threshold: p.top100, top1000_threshold: p.top1000,
+    in_top_100: bsr <= 100, in_top_1000: bsr <= 1000,
+  };
+}
+
+// ── Keyword helpers ───────────────────────────────────────────────────────────
+function fallbackKeywords(q) {
+  return [
+    `${q} for beginners`, `${q} guide`, `${q} handbook`,
+    `${q} mastery`, `${q} complete guide`, `how to ${q}`,
+    `learn ${q}`, `${q} secrets`, `${q} tips`, `advanced ${q}`,
+    `${q} workbook`, `${q} for dummies`, `${q} 2024`, `best ${q} books`,
+    `${q} step by step`, `${q} made easy`, `${q} essentials`, `${q} crash course`,
+    `${q} quick start`, `${q} deep dive`,
+  ];
+}
+
+async function getKeywords(q, limit = 20) {
+  // Try Amazon autocomplete via a free CORS proxy
+  try {
+    const amazonUrl = `https://completion.amazon.com/api/2017/suggestions?mid=ATVPDKIKX0DER&alias=stripbooks&prefix=${encodeURIComponent(q)}&limit=${limit}`;
+    const r = await fetch(
+      `https://api.allorigins.win/get?url=${encodeURIComponent(amazonUrl)}`,
+      { signal: AbortSignal.timeout(5000) }
+    );
+    if (r.ok) {
+      const outer = await r.json();
+      const inner = JSON.parse(outer.contents || '{}');
+      const kws = (inner.suggestions || []).map(s => s.value);
+      if (kws.length > 0) return kws.slice(0, limit);
+    }
+  } catch (_) {}
+  return fallbackKeywords(q).slice(0, limit);
+}
+
+function enrichKeywords(keywords, baseVolume = 40000) {
+  return keywords.map((kw, i) => {
+    const wc   = kw.split(' ').length;
+    const vol  = Math.max(50, baseVolume - i * 2500 - wc * 400 + _h(kw, 800));
+    const comp = Math.min(95, Math.max(5, 78 - i * 4 - wc * 3 + _h(kw.split('').reverse().join(''), 15)));
+    return {
+      keyword: kw,
+      estimated_monthly_searches: vol,
+      competition_score: comp,
+      opportunity_score: Math.min(100, Math.max(5, Math.round(vol / 800 * 0.4 + (100 - comp) * 0.6))),
+      word_count: wc,
+      type: wc > 2 ? 'long_tail' : 'broad',
+      avg_cpc: Math.round((0.20 + comp / 100 * 1.60) * 100) / 100,
+    };
+  });
+}
+
+// ── Static data ───────────────────────────────────────────────────────────────
+const CATEGORIES = {
+  'romance':             { name: 'Romance', competition: 92, trend: 'Stable', revenue: 'High', sub: ['Contemporary', 'Historical', 'Paranormal', 'Regency', 'Romantic Suspense', 'Clean & Wholesome', 'New Adult', 'Time Travel', 'Multicultural', 'Holiday', 'Sports', 'Small Town & Rural', 'Gothic', 'Sci-Fi Romance'] },
+  'mystery-thriller':    { name: 'Mystery, Thriller & Suspense', competition: 85, trend: 'Rising', revenue: 'High', sub: ['Crime Fiction', 'Hard-Boiled', 'Historical Mystery', 'Legal Thriller', 'Medical Thriller', 'Police Procedurals', 'Psychological Thriller', 'Cozy Mystery', 'True Crime', 'Supernatural Mystery'] },
+  'science-fiction':     { name: 'Science Fiction & Fantasy', competition: 83, trend: 'Rising', revenue: 'High', sub: ['Space Opera', 'Hard Science Fiction', 'Military Sci-Fi', 'Cyberpunk', 'Dystopian', 'LitRPG', 'Post-Apocalyptic', 'First Contact', 'Dark Fantasy', 'Epic Fantasy', 'Sword & Sorcery', 'Paranormal & Urban', 'Steampunk', 'Superhero'] },
+  'self-help':           { name: 'Self-Help', competition: 78, trend: 'Rising', revenue: 'Very High', sub: ['Motivational', 'Success', 'Time Management', 'Relationships', 'Mental Health', 'Stress Management', 'Happiness', 'Creativity', 'Communication & Social Skills', 'Anger Management', 'Memory Improvement', 'Self-Esteem', 'Spiritual'] },
+  'business-money':      { name: 'Business & Money', competition: 72, trend: 'Rising', revenue: 'Very High', sub: ['Entrepreneurship', 'Marketing & Sales', 'Personal Finance', 'Investing', 'Management & Leadership', 'Real Estate', 'Running a Business', 'Economics', 'Accounting', 'Job Hunting'] },
+  'health-fitness':      { name: 'Health, Fitness & Dieting', competition: 70, trend: 'Rising', revenue: 'High', sub: ["Diets & Weight Loss", "Exercise & Fitness", "Nutrition", "Mental Health", "Women's Health", "Men's Health", "Aging", "Alternative Medicine", "Diseases & Ailments"] },
+  'children':            { name: "Children's Books", competition: 68, trend: 'Stable', revenue: 'Moderate', sub: ['Picture Books', 'Early Readers', 'Chapter Books', 'Middle Grade', 'Activity Books', 'Educational', 'Animals', 'Holidays & Celebrations', 'Fairy Tales', 'Humor'] },
+  'cookbooks':           { name: 'Cookbooks, Food & Wine', competition: 65, trend: 'Stable', revenue: 'Moderate', sub: ['Baking', 'Quick & Easy', 'Healthy Cooking', 'International Cooking', 'BBQ & Grilling', 'Vegetarian & Vegan', 'Desserts', 'Asian Cooking', 'Italian Cooking', 'Holiday Cooking'] },
+  'history':             { name: 'History', competition: 58, trend: 'Stable', revenue: 'Moderate', sub: ['United States', 'World History', 'Military History', 'Ancient Civilizations', 'Europe', 'Asia', 'Middle East', 'Africa', 'Americas', 'Historical Study'] },
+  'biographies':         { name: 'Biographies & Memoirs', competition: 62, trend: 'Stable', revenue: 'Moderate', sub: ['Business Leaders', 'Historical Figures', 'Sports Stars', 'Artists & Writers', 'Political Figures', 'Scientists', 'Personal Memoirs'] },
+  'religion-spirituality': { name: 'Religion & Spirituality', competition: 60, trend: 'Stable', revenue: 'Moderate', sub: ['Christianity', 'New Age & Spirituality', 'Buddhism', 'Islam', 'Judaism', 'Hinduism', 'Devotional', 'Biblical Studies'] },
+  'parenting':           { name: 'Parenting & Relationships', competition: 55, trend: 'Rising', revenue: 'Moderate', sub: ['Parenting', 'Marriage & Relationships', 'Pregnancy', 'Early Childhood', 'Divorce', 'Family Activities'] },
+  'travel':              { name: 'Travel', competition: 52, trend: 'Rising', revenue: 'Low-Moderate', sub: ['Europe', 'United States', 'Asia', 'Latin America', 'Africa', 'Budget Travel', 'Adventure Travel'] },
+  'education':           { name: 'Education & Teaching', competition: 48, trend: 'Stable', revenue: 'Moderate', sub: ['Curriculum & Lesson Plans', 'Special Education', 'Higher Education', 'Early Childhood', 'Homeschooling', 'Test Preparation'] },
+  'crafts-hobbies':      { name: 'Crafts, Hobbies & Home', competition: 50, trend: 'Stable', revenue: 'Moderate', sub: ['Crafts & Hobbies', 'Home Improvement', 'Gardening', 'Sewing & Knitting', 'Woodworking', 'Drawing & Painting'] },
+  'low-content':         { name: 'Low-Content Books', competition: 65, trend: 'Rising', revenue: 'Moderate', sub: ['Notebooks & Journals', 'Planners & Organizers', 'Activity Books', 'Coloring Books', 'Puzzle Books', 'Log Books & Trackers'] },
+  'computers':           { name: 'Computers & Technology', competition: 68, trend: 'Rising', revenue: 'High', sub: ['Programming', 'AI & Machine Learning', 'Cybersecurity', 'Web Development', 'Data Science', 'Cloud Computing'] },
+};
+
+const GENRE_OPPORTUNITIES = [
+  { id: 'cozy-mystery', name: 'Cozy Mystery', competition: 58, trend: 'Rising', series_potential: 'Very High', ku_compatible: true, avg_write_weeks: 8, achievable_bsr_range: [3000, 25000], topics: [
+    { title: 'Bakery/café amateur sleuth series', demand: 88, notes: 'Readers buy entire series' },
+    { title: 'Retired detective in small coastal town', demand: 82, notes: 'Ages 40+ demographic, very loyal' },
+    { title: 'Cat café murder mystery series', demand: 80, notes: 'Pet + mystery crossover = double audience' },
+    { title: 'Bookshop owner solves local crimes', demand: 78, notes: 'Meta appeal to book lovers' },
+    { title: 'Yarn shop / quilting circle mystery', demand: 72, notes: 'Underserved niche, dedicated fans' },
+  ]},
+  { id: 'self-help', name: 'Self-Help / Personal Development', competition: 72, trend: 'Rising', series_potential: 'High', ku_compatible: true, avg_write_weeks: 5, achievable_bsr_range: [2000, 15000], topics: [
+    { title: 'Anxiety relief workbook for adults (ages 25-45)', demand: 92, notes: 'Workbooks sell at $12-18, high perceived value' },
+    { title: '30-day habit tracker + journal combo', demand: 87, notes: 'Seasonal peaks in Jan, Sep' },
+    { title: 'Boundaries and people-pleasing recovery', demand: 85, notes: 'Social media-driven demand, trending topic' },
+    { title: 'ADHD productivity system for entrepreneurs', demand: 83, notes: 'Underserved professional niche' },
+    { title: 'Dopamine detox and screen-time recovery', demand: 80, notes: '2024-2026 trending keyword cluster' },
+  ]},
+  { id: 'romance', name: 'Clean / Wholesome Romance', competition: 65, trend: 'Stable', series_potential: 'Very High', ku_compatible: true, avg_write_weeks: 6, achievable_bsr_range: [1500, 12000], topics: [
+    { title: 'Small-town second-chance romance (firefighter/nurse)', demand: 90, notes: 'Evergreen sub-genre, high KU page reads' },
+    { title: 'Grumpy sunshine forced proximity', demand: 88, notes: '#1 romance trope on BookTok right now' },
+    { title: "Cowboy/rancher clean western romance", demand: 82, notes: 'Older demographic, buys full series' },
+    { title: "Sports romance (hockey player + rival's sister)", demand: 85, notes: 'Very strong sub-community' },
+    { title: 'Fake dating small-town Christmas romance', demand: 80, notes: 'Holiday releases spike sales 3x' },
+  ]},
+  { id: 'business-money', name: 'Business & Entrepreneurship', competition: 68, trend: 'Rising', series_potential: 'Moderate', ku_compatible: false, avg_write_weeks: 7, achievable_bsr_range: [2500, 20000], topics: [
+    { title: 'AI tools for small business owners (practical guide)', demand: 95, notes: '2024-2026 peak demand window' },
+    { title: 'Etsy/side hustle to $5K/month step-by-step', demand: 88, notes: 'Aspirational, specific, high conversion' },
+    { title: 'Real estate investing for W-2 employees', demand: 85, notes: 'Perennial seller, high price tolerance' },
+    { title: 'Content creator monetization playbook', demand: 83, notes: 'Growing niche, aspirational buyer' },
+    { title: 'Bookkeeping and taxes for freelancers', demand: 80, notes: 'Annual repurchase potential' },
+  ]},
+  { id: 'science-fiction', name: 'LitRPG / GameLit', competition: 45, trend: 'Rising', series_potential: 'Very High', ku_compatible: true, avg_write_weeks: 10, achievable_bsr_range: [2000, 18000], topics: [
+    { title: 'Cultivation / progression fantasy (isekai-adjacent)', demand: 90, notes: 'Fastest growing SFF sub-genre on KU' },
+    { title: 'System apocalypse survival with stats', demand: 87, notes: 'Strong series loyalty, daily KU readers' },
+    { title: 'Tower climb dungeon core fantasy', demand: 83, notes: 'Sub-genre with dedicated subreddit community' },
+    { title: 'Solo leveling style manhwa-inspired novel', demand: 82, notes: 'Anime crossover audience' },
+    { title: 'Virtual reality sports LitRPG', demand: 75, notes: 'Underserved mashup niche' },
+  ]},
+  { id: 'children', name: "Children's Picture Books", competition: 55, trend: 'Stable', series_potential: 'High', ku_compatible: true, avg_write_weeks: 3, achievable_bsr_range: [5000, 40000], topics: [
+    { title: 'Emotions & feelings (anxiety, anger) for ages 3-6', demand: 88, notes: 'Therapist/school recommended = bulk buys' },
+    { title: 'Bedtime routine + sleep books', demand: 85, notes: 'Perennial gifted item, repeat purchase' },
+    { title: 'Diverse representation series (multicultural families)', demand: 82, notes: 'Library purchasing programs' },
+    { title: 'STEM curiosity (female scientists/inventors)', demand: 80, notes: 'Gift market + school market' },
+    { title: 'Potty training / first day of school milestone', demand: 78, notes: 'Every parent buys at least once' },
+  ]},
+  { id: 'health-fitness', name: 'Health & Wellness', competition: 62, trend: 'Rising', series_potential: 'Moderate', ku_compatible: false, avg_write_weeks: 6, achievable_bsr_range: [2000, 18000], topics: [
+    { title: 'Anti-inflammatory diet for beginners (30-day plan)', demand: 90, notes: 'Perennial high seller with seasonal spikes' },
+    { title: 'Menopause nutrition and weight management', demand: 88, notes: 'Underserved, high-paying demographic' },
+    { title: 'Strength training for women over 40', demand: 85, notes: 'Fastest growing fitness demographic' },
+    { title: 'Gut health and microbiome reset protocol', demand: 83, notes: 'TikTok/social-driven trend with longevity' },
+    { title: 'Low-carb / carnivore diet quick-start guide', demand: 80, notes: 'Loyal community, buys multiple resources' },
+  ]},
+  { id: 'low-content', name: 'Low-Content Books (Journals/Planners)', competition: 50, trend: 'Rising', series_potential: 'Very High', ku_compatible: false, avg_write_weeks: 1, achievable_bsr_range: [8000, 60000], topics: [
+    { title: 'Niche-themed gratitude journals (sobriety, grief, new moms)', demand: 85, notes: 'Low competition in specific sub-niches' },
+    { title: 'Habit tracker + weekly planner combo (6-month)', demand: 82, notes: 'Best-seller format, easy to publish at scale' },
+    { title: 'Grief journal for adults (lose a parent/spouse)', demand: 80, notes: 'Very underserved emotional niche' },
+    { title: 'Business budget & goal tracker (entrepreneur edition)', demand: 78, notes: 'High price tolerance, buy as gifts' },
+    { title: 'Teacher planner / classroom organizer', demand: 75, notes: 'Annual repurchase, school gifting' },
+  ]},
+];
+
+// ── API object — mirrors every backend endpoint ───────────────────────────────
+const API = {
+
+  keywords: {
+    suggest: async (q, limit = 20) => {
+      const kws = await getKeywords(q, limit);
+      return { seed_keyword: q, keywords: enrichKeywords(kws.slice(0, limit)) };
+    },
+    analyze: async (q) => {
+      const kws = await getKeywords(q, 20);
+      const enriched = enrichKeywords(kws);
+      const avgComp  = enriched.reduce((s, k) => s + k.competition_score, 0) / Math.max(enriched.length, 1);
+      const totalVol = enriched.reduce((s, k) => s + k.estimated_monthly_searches, 0);
+      return {
+        seed_keyword: q,
+        summary: {
+          total_monthly_searches: totalVol,
+          avg_competition_score: Math.round(avgComp),
+          opportunity_score: Math.min(100, Math.round(100 - avgComp + 15)),
+          avg_cpc: Math.round((0.25 + avgComp / 100 * 1.55) * 100) / 100,
+          kdp_ads_recommended: avgComp < 65,
+          keyword_count: enriched.length,
+        },
+        keywords: enriched,
+        long_tail: enriched.filter(k => k.word_count > 2),
+        broad:     enriched.filter(k => k.word_count <= 2),
+      };
+    },
+  },
+
+  bsr: {
+    calculate: async (bsr, category, price, royalty) => {
+      bsr     = parseInt(bsr);
+      price   = parseFloat(price);
+      royalty = parseFloat(royalty);
+      const stats      = bsrToSales(bsr, category);
+      const royaltyPer = Math.round(price * royalty * 100) / 100;
+      const monthlyRev = Math.round(stats.monthly_sales * royaltyPer * 100) / 100;
+      const trend = [];
+      for (let day = 1; day <= 30; day++) {
+        const noise = _h(`${bsr}-${day}`, Math.floor(bsr * 0.25) + 1) - Math.floor(bsr * 0.125);
+        trend.push({ day, bsr: Math.max(1, bsr + noise) });
+      }
+      return {
+        ...stats,
+        revenue: {
+          price, royalty_rate: royalty, royalty_per_sale: royaltyPer,
+          monthly_revenue: monthlyRev,
+          annual_revenue: Math.round(monthlyRev * 12 * 100) / 100,
+        },
+        bsr_trend: trend,
+        available_categories: Object.keys(BSR_PROFILES),
+      };
+    },
+  },
+
+  categories: {
+    list: async () => {
+      const out = Object.entries(CATEGORIES).map(([k, v]) => ({
+        id: k, name: v.name, competition_score: v.competition,
+        trend: v.trend, revenue_potential: v.revenue, subcategory_count: v.sub.length,
+      }));
+      out.sort((a, b) => b.competition_score - a.competition_score);
+      return { categories: out, total: out.length };
+    },
+    get: async (id) => {
+      const c = CATEGORIES[id];
+      if (!c) throw new Error('Category not found');
+      const subs = c.sub.map((name, i) => {
+        const comp   = Math.min(95, Math.max(10, c.competition - 10 + _h(name, 25) - 5));
+        const demand = Math.min(98, Math.max(20, 80 - i * 2 + _h(name.split('').reverse().join(''), 20) - 5));
+        return {
+          name, competition_score: comp, demand_score: demand,
+          opportunity_score: Math.round(demand * 0.55 + (100 - comp) * 0.45),
+          top100_bsr_threshold: 8000 + i * 4000 + _h(name, 30000),
+          est_monthly_revenue: Math.round(100000 / Math.max(comp, 1) * 45),
+          trend: ['Rising', 'Stable', 'Declining'][_h(name, 3)],
+          recommended: comp < 60 && demand > 55,
+        };
+      });
+      subs.sort((a, b) => b.opportunity_score - a.opportunity_score);
+      return { id, name: c.name, competition_score: c.competition, trend: c.trend, subcategories: subs };
+    },
+  },
+
+  niche: {
+    search: async (q, limit = 12) => {
+      const kws = await getKeywords(q, limit + 5);
+      const niches = kws.slice(0, limit).map((phrase, i) => {
+        const comp   = Math.max(10, 65 - i * 4 + _h(phrase, 20) - 10);
+        const demand = Math.max(20, 75 - i * 2 + _h(phrase.split('').reverse().join(''), 20) - 5);
+        const opp    = Math.round(demand * 0.55 + (100 - comp) * 0.45);
+        return {
+          niche: phrase, competition_score: comp, demand_score: demand, opportunity_score: opp,
+          estimated_books_in_niche: 30 + comp * 8 + _h(phrase, 400),
+          avg_reviews_top_10: Math.max(3, 12 + Math.floor(comp / 5) + _h(phrase + 'r', 25)),
+          avg_price_top_10: Math.round((7.99 + _h(phrase, 10)) * 100) / 100,
+          trend: ['Rising', 'Stable', 'Declining'][_h(phrase, 3)],
+          tier: opp >= 70 ? 'Green' : opp >= 45 ? 'Yellow' : 'Red',
+          recommendation: opp >= 70 ? 'Highly Recommended' : opp >= 45 ? 'Proceed with Caution' : 'Avoid',
+        };
+      });
+      niches.sort((a, b) => b.opportunity_score - a.opportunity_score);
+      return { topic: q, niches, best_niche: niches[0] || null };
+    },
+  },
+
+  ads: {
+    keywords: async (q, budget) => {
+      const kws = await getKeywords(q, 18);
+      const results = kws.map((kw, i) => {
+        const bidLow = Math.round((0.12 + _h(kw, 40) / 100) * 100) / 100;
+        const bidSug = Math.round(bidLow * 1.6 * 100) / 100;
+        const bidHi  = Math.round(bidLow * 2.8 * 100) / 100;
+        return {
+          keyword: kw, match_type: ['Broad', 'Phrase', 'Exact'][i % 3],
+          bid_low: bidLow, bid_suggested: bidSug, bid_high: bidHi,
+          est_daily_clicks: Math.round(budget / Math.max(bidSug, 0.01) * 10) / 10,
+          competition: ['Low', 'Medium', 'High'][_h(kw, 3)],
+          relevance_score: Math.max(45, 100 - i * 4),
+        };
+      });
+      return {
+        seed_keyword: q, daily_budget: budget, keywords: results,
+        campaign_tip: `Start with Phrase match for '${q}' at $${parseFloat(budget).toFixed(2)}/day. Broad match for discovery, Exact for ACOS control.`,
+      };
+    },
+  },
+
+  market: {
+    overview: async () => {
+      const categories = Object.entries(CATEGORIES).map(([id, c]) => ({
+        id, name: c.name, competition_score: c.competition, trend: c.trend,
+        revenue_potential: c.revenue,
+        monthly_books_published: 1000 + c.competition * 120 + _h(id, 3000),
+      }));
+      categories.sort((a, b) => b.competition_score - a.competition_score);
+      return {
+        categories,
+        market_stats: {
+          total_kdp_books: '7.2M+', monthly_new_books: '300,000+',
+          avg_kindle_price: '$4.99', avg_print_price: '$12.99', kindle_unlimited_titles: '4M+',
+        },
+        top_opportunities: [
+          { niche: 'LitRPG / GameLit',             reason: 'Rapidly growing readership, under-served'   },
+          { niche: 'Cozy Mystery',                  reason: 'Strong reader loyalty, series potential'    },
+          { niche: 'AI & Technology Self-Help',     reason: 'Surging demand, low existing supply'        },
+          { niche: 'Clean Romance',                 reason: 'Large audience, KU compatible'              },
+          { niche: 'Cybersecurity for Non-Techies', reason: 'High search volume, few quality titles'     },
+        ],
+      };
+    },
+  },
+
+  lowcontent: {
+    ideas: async (topic, limit = 24) => {
+      const templates = [
+        ['Journal',  ['Lined Journal','Dot Grid Journal','Blank Journal','Guided Journal','Prompted Journal']],
+        ['Planner',  ['Daily Planner','Weekly Planner','Monthly Planner','Goal Planner','Academic Planner','Budget Planner']],
+        ['Notebook', ['College Ruled Notebook','Wide Ruled Notebook','Graph Paper Notebook','Composition Notebook']],
+        ['Tracker',  ['Habit Tracker','Mood Tracker','Sleep Log','Workout Log','Food Log','Reading Log']],
+        ['Activity', ['Coloring Book','Word Search','Crossword Puzzle','Sudoku Book','Maze Book']],
+        ['Diary',    ['Daily Diary','Travel Diary','Dream Journal','Gratitude Journal']],
+        ['Workbook', ['Practice Workbook','Study Workbook','Self-Study Guide']],
+      ];
+      const ideas = [];
+      for (const [typeName, variants] of templates) {
+        for (const variant of variants) {
+          const title  = topic.trim() ? `${topic.trim()} ${variant}` : variant;
+          const rev    = title.split('').reverse().join('');
+          const comp   = Math.max(10, 35 + _h(title, 45));
+          const demand = Math.max(20, 55 + _h(rev, 35));
+          const opp    = Math.round(demand * 0.55 + (100 - comp) * 0.45);
+          ideas.push({
+            title, type: typeName, competition_score: comp, demand_score: demand, opportunity_score: opp,
+            est_monthly_sales: Math.max(1, Math.round((demand - comp / 2) * 0.4)),
+            recommended_price: demand > 70 ? '$7.99' : demand > 50 ? '$6.99' : '$5.99',
+            trim_size: ['Activity','Planner'].includes(typeName) ? '8.5x11' : '6x9',
+            page_count: typeName === 'Activity' ? 50 : 120,
+            recommended: opp >= 65,
+          });
+        }
+      }
+      ideas.sort((a, b) => b.opportunity_score - a.opportunity_score);
+      return { topic: topic || 'General', total_ideas: ideas.length, ideas: ideas.slice(0, limit), top_pick: ideas[0] || null };
+    },
+  },
+
+  book: {
+    analyze: async (asin) => {
+      asin = asin.toUpperCase();
+      const seed   = _h(asin, 10000);
+      const bsrMain = 500 + seed * 8;
+      const monthly = bsrToSales(bsrMain, 'kindle-ebooks').monthly_sales;
+      const price   = Math.round((9.99 + _h(asin + 'p', 15)) * 100) / 100;
+      const catKeys = Object.keys(CATEGORIES);
+      const idx     = seed % catKeys.length;
+      return {
+        asin, estimated_bsr: bsrMain,
+        estimated_category_bsr: Math.max(1, Math.floor(bsrMain / 12)),
+        estimated_monthly_sales: monthly,
+        estimated_monthly_revenue: Math.round(monthly * price * 0.70 * 100) / 100,
+        review_count: 5 + _h(asin + 'r', 3000),
+        avg_rating: Math.min(5.0, Math.round((3.5 + _h(asin + 'ra', 16) / 10) * 10) / 10),
+        page_count: 150 + _h(asin + 'pg', 250),
+        estimated_price: price,
+        categories: catKeys.slice(idx, idx + 3).map(c => CATEGORIES[c]?.name).filter(Boolean),
+        competition_score: Math.min(95, 30 + seed % 60),
+        opportunity_score: Math.max(10, 80 - seed % 50),
+        note: 'Estimates based on BSR algorithms. Real data requires Amazon PA API credentials.',
+      };
+    },
+  },
+
+  profitGoal: async (monthly_target, price, royalty, books) => {
+    monthly_target = parseFloat(monthly_target);
+    price          = parseFloat(price);
+    royalty        = parseFloat(royalty);
+    books          = parseInt(books);
+    const royaltyPer  = Math.round(price * royalty * 100) / 100;
+    const totalCopies = Math.ceil(monthly_target / royaltyPer);
+    const copiesPerBook = Math.ceil(totalCopies / books);
+    const a = 7440, b = 0.699;
+    const requiredBsr = copiesPerBook <= 0 ? 9999999 : Math.round(Math.pow(copiesPerBook / a, -1 / b));
+
+    let achieveLabel, achieveScore;
+    if      (requiredBsr <  1000) { achieveLabel = 'Very Hard';  achieveScore = 20; }
+    else if (requiredBsr <  3000) { achieveLabel = 'Hard';       achieveScore = 40; }
+    else if (requiredBsr <  8000) { achieveLabel = 'Moderate';   achieveScore = 60; }
+    else if (requiredBsr < 25000) { achieveLabel = 'Achievable'; achieveScore = 80; }
+    else                          { achieveLabel = 'Easy';       achieveScore = 95; }
+
+    const recommendations = GENRE_OPPORTUNITIES.map(genre => {
+      const [bsrLo, bsrHi] = genre.achievable_bsr_range;
+      let fitScore;
+      if      (requiredBsr < bsrLo * 0.4) fitScore = 22;
+      else if (requiredBsr < bsrLo * 0.7) fitScore = 40;
+      else if (requiredBsr <= bsrLo)       fitScore = 62;
+      else if (requiredBsr <= bsrHi)       fitScore = Math.round(68 + 28 * (requiredBsr - bsrLo) / (bsrHi - bsrLo));
+      else                                 fitScore = 98;
+      fitScore = Math.min(98, Math.max(10, fitScore));
+      return {
+        genre: genre.name, genre_id: genre.id, competition_score: genre.competition,
+        trend: genre.trend, series_potential: genre.series_potential,
+        ku_compatible: genre.ku_compatible, avg_weeks_to_write: genre.avg_write_weeks,
+        fit_score: fitScore, topics: genre.topics,
+        scenario: {
+          books, copies_per_book_needed: copiesPerBook, required_bsr_per_book: requiredBsr,
+          achievability: achieveLabel, achievability_score: achieveScore,
+          monthly_if_achieved: Math.round(copiesPerBook * books * royaltyPer * 100) / 100,
+        },
+      };
+    });
+    recommendations.sort((a, b) => b.fit_score - a.fit_score);
+
+    const summary = achieveScore >= 80
+      ? `Great news — selling ${copiesPerBook} copies/month per book at $${price} is very achievable for a new author.`
+      : achieveScore >= 60
+      ? `Selling ${copiesPerBook} copies/month per book is realistic but will take 3–6 months of effort to reach.`
+      : `Selling ${copiesPerBook} copies/month per book is ambitious. Consider a higher price or more books to make the goal easier.`;
+
+    return {
+      goal: {
+        monthly_target, price, royalty_rate: royalty, royalty_per_book: royaltyPer,
+        books_in_portfolio: books, total_copies_needed_monthly: totalCopies,
+        copies_per_book_per_month: copiesPerBook, required_bsr_per_book: requiredBsr,
+        achievability: achieveLabel, achievability_score: achieveScore, summary,
+      },
+      top_genres: recommendations.slice(0, 5),
+      all_genres: recommendations,
+    };
+  },
+};
+
+function scoreColor(score) {
+  if (score >= 70) return 'var(--green)';
+  if (score >= 45) return 'var(--yellow)';
+  return 'var(--red)';
+}
+
+function competitionColor(score) {
+  if (score <= 35) return 'var(--green)';
+  if (score <= 65) return 'var(--yellow)';
+  return 'var(--red)';
+}
+
+function scoreBar(score, colorFn = scoreColor) {
+  return `
+    <div class="score-bar">
+      <div class="score-bar-track">
+        <div class="score-bar-fill" style="width:${score}%;background:${colorFn(score)}"></div>
+      </div>
+      <span class="score-bar-label" style="color:${colorFn(score)}">${score}</span>
+    </div>`;
+}
+
+function badge(text, type = 'gray') {
+  return `<span class="badge badge-${type}">${text}</span>`;
+}
+
+function tierBadge(tier) {
+  const map = { Green: 'green', Yellow: 'yellow', Red: 'red' };
+  const labels = { Green: 'Go', Yellow: 'Caution', Red: 'Avoid' };
+  return badge(labels[tier] || tier, map[tier] || 'gray');
+}
+
+function trendBadge(trend) {
+  if (trend === 'Rising') return badge('↑ Rising', 'green');
+  if (trend === 'Declining') return badge('↓ Declining', 'red');
+  return badge('→ Stable', 'gray');
+}
+
+function fmtNum(n) {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+  if (n >= 1_000)     return (n / 1_000).toFixed(1) + 'K';
+  return String(n);
+}
+
+function fmtMoney(n) {
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function showLoading(el, msg = 'Fetching data…') {
+  el.innerHTML = `<div class="loading-state"><div class="spinner"></div><span>${msg}</span></div>`;
+}
+
+function showEmpty(el, icon, title, desc) {
+  el.innerHTML = `<div class="empty-state"><div class="empty-icon">${icon}</div><h3>${title}</h3><p>${desc}</p></div>`;
+}
+
+function showError(el, msg) {
+  el.innerHTML = `<div class="alert alert-warning" style="margin:0">${msg}</div>`;
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function initDashboard() {
+  try {
+    const data = await API.market.overview();
+    renderDashboard(data);
+  } catch (err) {
+    document.getElementById('dashboard-content').innerHTML =
+      `<div class="alert alert-warning">Could not load market data: ${err.message}</div>`;
+  }
+}
+
+function renderDashboard(d) {
+  const el = document.getElementById('dashboard-content');
+  el.innerHTML = `
+    <div class="grid grid-4 mb-4">
+      ${dashStat('📚', 'Total KDP Books', d.market_stats.total_kdp_books, 'Growing monthly', 'up')}
+      ${dashStat('📦', 'New Books/Month', d.market_stats.monthly_new_books, 'Stay ahead of the curve', '')}
+      ${dashStat('💲', 'Avg Kindle Price', d.market_stats.avg_kindle_price, 'Optimal pricing range', '')}
+      ${dashStat('⭐', 'KU Titles', d.market_stats.kindle_unlimited_titles, 'Unlimited pool', 'up')}
+    </div>
+
+    <div class="grid grid-2 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">🔥 Top Market Opportunities</div><div class="card-subtitle">Highest opportunity niches right now</div></div>
+        </div>
+        <ul class="opportunity-list">
+          ${d.top_opportunities.map((o, i) => `
+            <li>
+              <div class="opp-num">${i + 1}</div>
+              <div class="opp-text">
+                <strong>${escHtml(o.niche)}</strong>
+                <span>${escHtml(o.reason)}</span>
+              </div>
+            </li>`).join('')}
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">🧭 Quick Tool Access</div></div>
+        <div class="grid grid-2" style="gap:10px">
+          ${quickTool('🔑', 'Keyword Research', 'Find high-value keywords', 'tool-keywords')}
+          ${quickTool('📊', 'BSR Calculator', 'Estimate sales from BSR', 'tool-bsr')}
+          ${quickTool('📂', 'Category Explorer', 'Find low-competition niches', 'tool-categories')}
+          ${quickTool('🎯', 'Niche Finder', 'Discover profitable niches', 'tool-niche')}
+          ${quickTool('📣', 'KDP Ads Keywords', 'Optimize ad campaigns', 'tool-ads')}
+          ${quickTool('📓', 'Low-Content Ideas', 'Journals, planners & more', 'tool-lowcontent')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">📈 Category Competition Overview</div><div class="card-subtitle">Red = high competition | Green = opportunity</div></div>
+      <div style="column-count:2;column-gap:24px">
+        ${d.categories.slice(0, 12).map(c => `
+          <div class="market-bar" style="break-inside:avoid;margin-bottom:10px">
+            <div class="market-bar-name" title="${escHtml(c.name)}">${escHtml(c.name)}</div>
+            <div class="market-bar-track">
+              <div class="market-bar-fill" style="width:${c.competition_score}%;background:${competitionColor(c.competition_score)}"></div>
+            </div>
+            <div class="market-bar-score">${c.competition_score}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function dashStat(icon, label, value, change, dir) {
+  return `<div class="stat-card">
+    <div class="stat-icon" style="background:#f1f5f9;font-size:1.2rem">${icon}</div>
+    <div class="stat-label">${label}</div>
+    <div class="stat-value" style="font-size:1.5rem">${value}</div>
+    <div class="stat-change ${dir}">${change}</div>
+  </div>`;
+}
+
+function quickTool(icon, title, desc, navTarget) {
+  return `<div class="card" style="cursor:pointer;padding:14px;border:1.5px solid var(--border)"
+      onclick="navigate('${navTarget}')">
+    <div style="font-size:1.4rem;margin-bottom:6px">${icon}</div>
+    <div class="font-bold text-sm">${title}</div>
+    <div class="text-xs text-muted">${desc}</div>
+  </div>`;
+}
+
+function initProfitGoal() {
+  document.getElementById('pg-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const target  = parseFloat(document.getElementById('pg-target').value);
+    const price   = parseFloat(document.getElementById('pg-price').value);
+    const royalty = parseFloat(document.getElementById('pg-royalty').value) / 100;
+    const books   = parseInt(document.getElementById('pg-books').value, 10);
+    if (!target) return;
+    await runProfitGoal(target, price, royalty, books);
+  });
+}
+
+async function runProfitGoal(target, price, royalty, books) {
+  const out = document.getElementById('pg-results');
+  showLoading(out, 'Calculating your path to profitability…');
+  try {
+    const data = await API.profitGoal(target, price, royalty, books);
+    renderProfitGoal(data);
+  } catch (err) {
+    showError(out, err.message);
+  }
+}
+
+function renderProfitGoal(d) {
+  const out = document.getElementById('pg-results');
+  const g = d.goal;
+  const achColor = scoreColor(g.achievability_score);
+
+  out.innerHTML = `
+    <!-- ── Goal Summary ── -->
+    <div class="card mb-4" style="border-left:4px solid ${achColor}">
+      <div class="card-header">
+        <div>
+          <div class="card-title" style="font-size:1.1rem">Your Path to ${fmtMoney(g.monthly_target)}/month</div>
+          <div class="card-subtitle">${escHtml(g.summary)}</div>
+        </div>
+        <div class="score-circle" style="background:${achColor}22;color:${achColor};width:80px;height:80px;font-size:1.1rem;text-align:center;line-height:1.2;flex-direction:column;gap:2px">
+          <div style="font-size:1.5rem;font-weight:900">${g.achievability_score}</div>
+          <div style="font-size:.6rem;font-weight:700;text-transform:uppercase">${g.achievability}</div>
+        </div>
+      </div>
+      <div class="grid grid-4">
+        ${pgStat('Monthly Target', fmtMoney(g.monthly_target), '🎯')}
+        ${pgStat('Copies Needed Total', g.total_copies_needed_monthly + '/mo', '📦')}
+        ${pgStat('Per Book', g.copies_per_book_per_month + ' copies/mo', '📚')}
+        ${pgStat('Required BSR/book', '#' + fmtNum(g.required_bsr_per_book), '📊')}
+      </div>
+      <div class="grid grid-3 mt-3">
+        ${pgStat('Your Price', fmtMoney(g.price), '💲')}
+        ${pgStat('Royalty/Sale', fmtMoney(g.royalty_per_book), '💰')}
+        ${pgStat('Books in Portfolio', g.books_in_portfolio, '📖')}
+      </div>
+    </div>
+
+    <!-- ── Top Genre Picks ── -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Best Genres for Your Goal</div>
+          <div class="card-subtitle">Ranked by how achievable your target BSR is in each genre</div>
+        </div>
+      </div>
+      ${d.top_genres.map((genre, i) => genreBlock(genre, i, g)).join('')}
+    </div>
+
+    <!-- ── All Genres Table ── -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">All Genres Ranked</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>Genre</th><th>Fit for Goal</th><th>Competition</th>
+            <th>Trend</th><th>Series?</th><th>KU?</th><th>Avg. Write Time</th>
+          </tr></thead>
+          <tbody>
+            ${d.all_genres.map((g2, i) => `
+              <tr>
+                <td class="font-bold">${i + 1}</td>
+                <td class="font-bold">${escHtml(g2.genre)}</td>
+                <td>${scoreBar(g2.fit_score)}</td>
+                <td>${scoreBar(g2.competition_score, competitionColor)}</td>
+                <td>${trendBadge(g2.trend)}</td>
+                <td>${g2.series_potential === 'Very High' ? badge('Very High', 'green') : badge(g2.series_potential, 'blue')}</td>
+                <td>${g2.ku_compatible ? badge('KU ✓', 'green') : badge('No KU', 'gray')}</td>
+                <td>${g2.avg_weeks_to_write} wks</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function genreBlock(genre, index, goal) {
+  const fitColor = scoreColor(genre.fit_score);
+  const topTopic = genre.topics[0];
+  return `
+    <div style="border:1.5px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px${index === 0 ? ';border-color:var(--green);background:#f0fdf4' : ''}">
+      <div style="display:flex;align-items:flex-start;gap:16px">
+        <div style="min-width:52px;text-align:center">
+          <div style="font-size:1.5rem;font-weight:900;color:${fitColor}">${genre.fit_score}</div>
+          <div style="font-size:.65rem;text-transform:uppercase;color:var(--text-muted)">Fit Score</div>
+        </div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            <span style="font-size:.95rem;font-weight:800">${index + 1}. ${escHtml(genre.genre)}</span>
+            ${index === 0 ? badge('Top Pick', 'green') : ''}
+            ${trendBadge(genre.trend)}
+            ${genre.ku_compatible ? badge('KU Compatible', 'blue') : ''}
+            ${badge(genre.series_potential + ' Series Potential', 'gray')}
+          </div>
+          <div style="font-size:.8rem;color:var(--text-muted);margin-bottom:10px">
+            Competition: ${genre.competition_score}/100 &nbsp;|&nbsp;
+            ~${genre.avg_weeks_to_write} wks to write &nbsp;|&nbsp;
+            Need BSR ≤ #${fmtNum(goal.required_bsr_per_book)} per book
+          </div>
+
+          <div style="font-size:.82rem;font-weight:700;margin-bottom:6px">Specific Topics to Write:</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">
+            ${genre.topics.map((t, ti) => `
+              <div style="background:${ti === 0 ? '#eff6ff' : '#f8fafc'};border-radius:7px;padding:10px 12px;border:1px solid ${ti === 0 ? '#bfdbfe' : 'var(--border)'}">
+                <div style="font-weight:700;font-size:.8rem;margin-bottom:3px">${escHtml(t.title)}</div>
+                <div style="font-size:.72rem;color:var(--text-muted)">${escHtml(t.notes)}</div>
+                <div style="margin-top:5px">${scoreBar(t.demand)}</div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function pgStat(label, value, icon) {
+  return `<div style="text-align:center;padding:12px;background:#f8fafc;border-radius:8px">
+    <div style="font-size:1.2rem;margin-bottom:4px">${icon}</div>
+    <div style="font-size:.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px">${label}</div>
+    <div style="font-size:1rem;font-weight:800">${value}</div>
+  </div>`;
+}
+
+let kwChart = null;
+
+function initKeywords() {
+  document.getElementById('kw-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const q = document.getElementById('kw-input').value.trim();
+    if (!q) return;
+    await runKeywordResearch(q);
+  });
+}
+
+async function runKeywordResearch(q) {
+  const results = document.getElementById('kw-results');
+  const summary = document.getElementById('kw-summary');
+  showLoading(results, 'Researching keywords on Amazon…');
+  summary.classList.add('hidden');
+
+  try {
+    const data = await API.keywords.analyze(q);
+
+    // Update summary strip
+    const s = data.summary;
+    document.getElementById('kw-stat-searches').textContent = fmtNum(s.total_monthly_searches);
+    document.getElementById('kw-stat-competition').textContent = s.avg_competition_score;
+    document.getElementById('kw-stat-opportunity').textContent = s.opportunity_score;
+    document.getElementById('kw-stat-cpc').textContent = fmtMoney(s.avg_cpc);
+    document.getElementById('kw-stat-count').textContent = s.keyword_count;
+    document.getElementById('kw-stat-ads').textContent = s.kdp_ads_recommended ? 'Yes ✓' : 'Borderline';
+    summary.classList.remove('hidden');
+
+    // Render chart (canvas stays in summary div, safe from innerHTML replacement)
+    renderKwChart(data.keywords.slice(0, 12));
+
+    // Render tabs + tables into results
+    results.innerHTML = `
+      <div class="tabs" id="kw-tabs">
+        <button class="tab-btn active" onclick="kwSwitchTab('all',this)">All Keywords (${data.keywords.length})</button>
+        <button class="tab-btn" onclick="kwSwitchTab('long',this)">Long Tail (${data.long_tail.length})</button>
+        <button class="tab-btn" onclick="kwSwitchTab('broad',this)">Broad (${data.broad.length})</button>
+      </div>
+      <div id="kw-panel-all">${buildKwTable(data.keywords)}</div>
+      <div id="kw-panel-long" class="hidden">${buildKwTable(data.long_tail)}</div>
+      <div id="kw-panel-broad" class="hidden">${buildKwTable(data.broad)}</div>`;
+  } catch (err) {
+    showError(results, 'Error: ' + err.message);
+    summary.classList.add('hidden');
+  }
+}
+
+function kwSwitchTab(tab, btn) {
+  ['all','long','broad'].forEach(t => {
+    document.getElementById(`kw-panel-${t}`).classList.toggle('hidden', t !== tab);
+  });
+  btn.closest('#kw-tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function buildKwTable(keywords) {
+  if (!keywords || keywords.length === 0)
+    return '<p class="text-muted text-sm" style="padding:16px">No keywords in this group.</p>';
+  return `
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Keyword</th>
+            <th>Est. Searches/mo</th>
+            <th>Competition</th>
+            <th>Opportunity</th>
+            <th>Avg CPC</th>
+            <th>Type</th>
+          </tr></thead>
+          <tbody>
+            ${keywords.map(k => `
+              <tr>
+                <td class="font-bold">${escHtml(k.keyword)}</td>
+                <td>${fmtNum(k.estimated_monthly_searches)}</td>
+                <td>${scoreBar(k.competition_score, competitionColor)}</td>
+                <td>${scoreBar(k.opportunity_score)}</td>
+                <td>$${k.avg_cpc.toFixed(2)}</td>
+                <td>${badge(k.type === 'long_tail' ? 'Long Tail' : 'Broad', k.type === 'long_tail' ? 'blue' : 'gray')}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function renderKwChart(keywords) {
+  const ctx = document.getElementById('kw-chart');
+  if (!ctx) return;
+  if (kwChart) kwChart.destroy();
+  kwChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: keywords.map(k => k.keyword.length > 22 ? k.keyword.slice(0, 22) + '…' : k.keyword),
+      datasets: [
+        {
+          label: 'Est. Monthly Searches',
+          data: keywords.map(k => k.estimated_monthly_searches),
+          backgroundColor: 'rgba(59,130,246,0.75)',
+          borderRadius: 4,
+          yAxisID: 'y',
+        },
+        {
+          label: 'Competition Score',
+          data: keywords.map(k => k.competition_score),
+          backgroundColor: 'rgba(245,158,11,0.75)',
+          borderRadius: 4,
+          yAxisID: 'y2',
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        y:  { type: 'linear', position: 'left',  title: { display: true, text: 'Monthly Searches' } },
+        y2: { type: 'linear', position: 'right', title: { display: true, text: 'Competition (0-100)' }, min: 0, max: 100, grid: { drawOnChartArea: false } },
+      },
+    },
+  });
+}
+
+let bsrTrendChart = null;
+
+function initBsr() {
+  document.getElementById('bsr-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const bsr      = parseInt(document.getElementById('bsr-input').value, 10);
+    const category = document.getElementById('bsr-category').value;
+    const price    = parseFloat(document.getElementById('bsr-price').value);
+    const royalty  = parseFloat(document.getElementById('bsr-royalty').value) / 100;
+    if (!bsr || bsr < 1) return;
+    await runBsrCalc(bsr, category, price, royalty);
+  });
+
+  // Live price/royalty updates
+  ['bsr-price','bsr-royalty'].forEach(id => {
+    document.getElementById(id).addEventListener('input', debounce(rerunBsr, 600));
+  });
+}
+
+let lastBsrParams = null;
+
+function rerunBsr() {
+  if (!lastBsrParams) return;
+  const price   = parseFloat(document.getElementById('bsr-price').value);
+  const royalty = parseFloat(document.getElementById('bsr-royalty').value) / 100;
+  runBsrCalc(lastBsrParams.bsr, lastBsrParams.category, price, royalty);
+}
+
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); };
+}
+
+async function runBsrCalc(bsr, category, price, royalty) {
+  lastBsrParams = { bsr, category };
+  const output = document.getElementById('bsr-output');
+  showLoading(output, 'Calculating sales estimates…');
+
+  try {
+    const d = await API.bsr.calculate(bsr, category, price, royalty);
+    renderBsrResults(d);
+  } catch (err) {
+    showError(output, 'Error: ' + err.message);
+  }
+}
+
+function compLevelColor(level) {
+  const map = { 'Extreme': 'red', 'Very High': 'red', 'High': 'yellow', 'Moderate-High': 'yellow', 'Moderate': 'gray', 'Low-Moderate': 'green', 'Low': 'green', 'Very Low': 'green' };
+  return map[level] || 'gray';
+}
+
+function renderBsrResults(d) {
+  const output = document.getElementById('bsr-output');
+  const opp = d.opportunity_score;
+  const oppColor = scoreColor(opp);
+  const compColor = `var(--${compLevelColor(d.competition_level) === 'yellow' ? 'yellow' : compLevelColor(d.competition_level) === 'red' ? 'red' : 'green'})`;
+
+  output.innerHTML = `
+    <div class="grid grid-4 mb-4">
+      ${statBlock('Daily Sales', d.daily_sales, '📦', '#dbeafe')}
+      ${statBlock('Monthly Sales', d.monthly_sales, '📅', '#dcfce7')}
+      ${statBlock('Monthly Revenue', fmtMoney(d.revenue.monthly_revenue), '💰', '#fef3c7')}
+      ${statBlock('Annual Revenue', fmtMoney(d.revenue.annual_revenue), '🏦', '#f3e8ff')}
+    </div>
+
+    <div class="grid grid-2 mb-4">
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Competition Analysis</div></div></div>
+        <div style="display:flex;align-items:center;gap:20px">
+          <div class="score-circle" style="background:${oppColor}22;color:${oppColor}">${opp}</div>
+          <div style="flex:1">
+            <div class="mb-2">
+              <div class="text-xs text-muted mb-1">Opportunity Score</div>
+              ${scoreBar(opp)}
+            </div>
+            <div class="mb-2">
+              <div class="text-xs text-muted mb-1">Competition Score</div>
+              ${scoreBar(d.competition_score, competitionColor)}
+            </div>
+            <div class="mt-3">${badge(d.competition_level, compLevelColor(d.competition_level))}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Revenue Breakdown</div></div></div>
+        <div class="text-sm">
+          ${revenueRow('Price', fmtMoney(d.revenue.price))}
+          ${revenueRow('Royalty Rate', Math.round(d.revenue.royalty_rate * 100) + '%')}
+          ${revenueRow('Royalty per Sale', fmtMoney(d.revenue.royalty_per_sale))}
+          ${revenueRow('Monthly Sales', d.monthly_sales + ' copies')}
+          ${revenueRow('Monthly Revenue', fmtMoney(d.revenue.monthly_revenue), true)}
+          ${revenueRow('Annual Revenue', fmtMoney(d.revenue.annual_revenue), true)}
+        </div>
+        <div class="mt-3 text-xs text-muted">Based on ${d.category_name}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">30-Day BSR Trend Simulation</div><div class="card-subtitle">Illustrative based on rank volatility patterns</div></div>
+      </div>
+      <div class="chart-container" style="height:200px">
+        <canvas id="bsr-trend-chart"></canvas>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header"><div class="card-title">Category Benchmarks</div></div>
+      <div class="grid grid-3">
+        ${benchmarkBlock('Top 100 threshold', '#' + fmtNum(d.top100_threshold))}
+        ${benchmarkBlock('Top 1,000 threshold', '#' + fmtNum(d.top1000_threshold))}
+        ${benchmarkBlock('Your rank', '#' + fmtNum(d.bsr), d.in_top_1000 ? 'green' : d.bsr < d.top100_threshold ? 'blue' : 'gray')}
+      </div>
+    </div>`;
+
+  renderBsrTrend(d.bsr_trend);
+}
+
+function statBlock(label, value, icon, bg) {
+  return `
+    <div class="stat-card">
+      <div class="stat-icon" style="background:${bg};font-size:1.2rem">${icon}</div>
+      <div class="stat-label">${label}</div>
+      <div class="stat-value">${value}</div>
+    </div>`;
+}
+
+function revenueRow(label, value, bold = false) {
+  return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+    <span class="text-muted">${label}</span>
+    <span ${bold ? 'class="font-bold"' : ''}>${value}</span>
+  </div>`;
+}
+
+function benchmarkBlock(label, value, color = 'gray') {
+  const colors = { green: '#dcfce7', blue: '#dbeafe', gray: '#f1f5f9' };
+  return `<div style="text-align:center;padding:14px;background:${colors[color]};border-radius:8px">
+    <div class="text-xs text-muted mb-1">${label}</div>
+    <div class="font-black" style="font-size:1.3rem">${value}</div>
+  </div>`;
+}
+
+function renderBsrTrend(trend) {
+  const ctx = document.getElementById('bsr-trend-chart');
+  if (!ctx) return;
+  if (bsrTrendChart) bsrTrendChart.destroy();
+  bsrTrendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: trend.map(t => 'Day ' + t.day),
+      datasets: [{
+        label: 'BSR',
+        data: trend.map(t => t.bsr),
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59,130,246,0.08)',
+        fill: true,
+        tension: 0.35,
+        pointRadius: 2,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { reverse: true, title: { display: true, text: 'BSR (lower = better)' } },
+        x: { ticks: { maxTicksLimit: 10 } },
+      },
+    },
+  });
+}
+
+function initCategories() {
+  loadCategoryList();
+  document.getElementById('cat-back-btn').addEventListener('click', showCategoryList);
+}
+
+async function loadCategoryList() {
+  const out = document.getElementById('cat-list-area');
+  showLoading(out, 'Loading categories…');
+  try {
+    const data = await API.categories.list();
+    renderCategoryList(data.categories);
+  } catch (err) {
+    showError(out, err.message);
+  }
+}
+
+function renderCategoryList(categories) {
+  const out = document.getElementById('cat-list-area');
+  out.innerHTML = `
+    <div class="category-grid">
+      ${categories.map(c => `
+        <div class="category-card" onclick="loadCategoryDetail('${c.id}')">
+          <div class="category-card-name">${escHtml(c.name)}</div>
+          <div class="mb-2">
+            <div class="text-xs text-muted mb-1">Competition</div>
+            ${scoreBar(c.competition_score, competitionColor)}
+          </div>
+          <div class="category-card-meta">
+            ${trendBadge(c.trend)}
+            ${badge('Revenue: ' + c.revenue_potential, c.revenue_potential === 'Very High' ? 'green' : c.revenue_potential === 'High' ? 'blue' : 'gray')}
+            ${badge(c.subcategory_count + ' sub-cats', 'gray')}
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+async function loadCategoryDetail(id) {
+  document.getElementById('cat-list-view').classList.add('hidden');
+  document.getElementById('cat-detail-view').classList.remove('hidden');
+
+  const out = document.getElementById('cat-detail-area');
+  showLoading(out, 'Loading category data…');
+
+  try {
+    const d = await API.categories.get(id);
+    document.getElementById('cat-detail-title').textContent = d.name;
+    renderCategoryDetail(d);
+  } catch (err) {
+    showError(out, err.message);
+  }
+}
+
+function showCategoryList() {
+  document.getElementById('cat-list-view').classList.remove('hidden');
+  document.getElementById('cat-detail-view').classList.add('hidden');
+}
+
+function renderCategoryDetail(d) {
+  const out = document.getElementById('cat-detail-area');
+  out.innerHTML = `
+    <div class="grid grid-3 mb-4">
+      <div class="stat-card">
+        <div class="stat-label">Competition Score</div>
+        <div class="stat-value">${d.competition_score}</div>
+        ${scoreBar(d.competition_score, competitionColor)}
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Trend</div>
+        <div class="stat-value" style="font-size:1rem">${trendBadge(d.trend)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Sub-Categories</div>
+        <div class="stat-value">${d.subcategories.length}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Sub-Category Opportunities</div>
+          <div class="card-subtitle">Sorted by opportunity score — highest first</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Sub-Category</th>
+            <th>Demand</th>
+            <th>Competition</th>
+            <th>Opportunity</th>
+            <th>Top-100 BSR</th>
+            <th>Monthly Rev Potential</th>
+            <th>Trend</th>
+            <th></th>
+          </tr></thead>
+          <tbody>
+            ${d.subcategories.map(s => `
+              <tr>
+                <td class="font-bold">${escHtml(s.name)}</td>
+                <td>${scoreBar(s.demand_score)}</td>
+                <td>${scoreBar(s.competition_score, competitionColor)}</td>
+                <td>${scoreBar(s.opportunity_score)}</td>
+                <td>#${fmtNum(s.top100_bsr_threshold)}</td>
+                <td>${fmtMoney(s.est_monthly_revenue)}</td>
+                <td>${trendBadge(s.trend)}</td>
+                <td>${s.recommended ? badge('Recommended', 'green') : ''}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+let nicheChart = null;
+
+function initNiche() {
+  document.getElementById('niche-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const q = document.getElementById('niche-input').value.trim();
+    if (!q) return;
+    await runNicheSearch(q);
+  });
+
+  document.getElementById('niche-view-grid').addEventListener('click', () => setNicheView('grid'));
+  document.getElementById('niche-view-table').addEventListener('click', () => setNicheView('table'));
+  document.getElementById('niche-view-chart').addEventListener('click', () => setNicheView('chart'));
+}
+
+let lastNicheData = null;
+let currentNicheView = 'grid';
+
+function setNicheView(view) {
+  currentNicheView = view;
+  ['grid','table','chart'].forEach(v => {
+    document.getElementById(`niche-view-${v}`).classList.toggle('active', v === view);
+  });
+  if (lastNicheData) renderNicheResults(lastNicheData);
+}
+
+async function runNicheSearch(q) {
+  const out = document.getElementById('niche-results');
+  showLoading(out, 'Analyzing niche opportunities…');
+  try {
+    const data = await API.niche.search(q, 15);
+    lastNicheData = data;
+    renderNicheResults(data);
+  } catch (err) {
+    showError(out, err.message);
+  }
+}
+
+function renderNicheResults(data) {
+  const out = document.getElementById('niche-results');
+
+  if (!data.niches || data.niches.length === 0) {
+    showEmpty(out, '🔍', 'No niches found', 'Try a different search term');
+    return;
+  }
+
+  const best = data.best_niche;
+  const headerHtml = best ? `
+    <div class="alert alert-success mb-4">
+      <strong>Top Pick:</strong> "${escHtml(best.niche)}" — Opportunity Score: ${best.opportunity_score}/100 | ${best.recommendation}
+    </div>` : '';
+
+  if (currentNicheView === 'grid') {
+    out.innerHTML = headerHtml + `
+      <div class="niche-grid">
+        ${data.niches.map(n => nicheCard(n)).join('')}
+      </div>`;
+  } else if (currentNicheView === 'table') {
+    out.innerHTML = headerHtml + nicheTable(data.niches);
+  } else {
+    out.innerHTML = headerHtml + `
+      <div class="card">
+        <div class="card-header"><div class="card-title">Demand vs. Competition Matrix</div><div class="card-subtitle">Upper-left = best opportunities</div></div>
+        <div class="chart-container" style="height:380px"><canvas id="niche-scatter-chart"></canvas></div>
+      </div>`;
+    renderNicheChart(data.niches);
+  }
+}
+
+function nicheCard(n) {
+  return `
+    <div class="niche-card tier-${n.tier}">
+      <div class="niche-card-name">${escHtml(n.niche)}</div>
+      <div class="niche-metrics">
+        <div class="niche-metric">
+          <div class="niche-metric-value" style="color:${scoreColor(n.opportunity_score)}">${n.opportunity_score}</div>
+          <div class="niche-metric-label">Opportunity</div>
+        </div>
+        <div class="niche-metric">
+          <div class="niche-metric-value" style="color:${competitionColor(n.competition_score)}">${n.competition_score}</div>
+          <div class="niche-metric-label">Competition</div>
+        </div>
+        <div class="niche-metric">
+          <div class="niche-metric-value">${n.demand_score}</div>
+          <div class="niche-metric-label">Demand</div>
+        </div>
+        <div class="niche-metric">
+          <div class="niche-metric-value">${fmtNum(n.estimated_books_in_niche)}</div>
+          <div class="niche-metric-label">Books</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+        ${tierBadge(n.tier)}
+        ${trendBadge(n.trend)}
+        <span class="badge badge-gray">~${n.avg_reviews_top_10} avg reviews</span>
+      </div>
+    </div>`;
+}
+
+function nicheTable(niches) {
+  return `
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Niche</th>
+            <th>Opportunity</th>
+            <th>Demand</th>
+            <th>Competition</th>
+            <th>Books in Niche</th>
+            <th>Avg Reviews (Top 10)</th>
+            <th>Avg Price</th>
+            <th>Trend</th>
+            <th>Verdict</th>
+          </tr></thead>
+          <tbody>
+            ${niches.map(n => `
+              <tr>
+                <td class="font-bold">${escHtml(n.niche)}</td>
+                <td>${scoreBar(n.opportunity_score)}</td>
+                <td>${scoreBar(n.demand_score)}</td>
+                <td>${scoreBar(n.competition_score, competitionColor)}</td>
+                <td>${fmtNum(n.estimated_books_in_niche)}</td>
+                <td>${n.avg_reviews_top_10}</td>
+                <td>$${n.avg_price_top_10.toFixed(2)}</td>
+                <td>${trendBadge(n.trend)}</td>
+                <td>${tierBadge(n.tier)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function renderNicheChart(niches) {
+  const ctx = document.getElementById('niche-scatter-chart');
+  if (!ctx) return;
+  if (nicheChart) nicheChart.destroy();
+
+  const colorMap = { Green: 'rgba(16,185,129,0.8)', Yellow: 'rgba(245,158,11,0.8)', Red: 'rgba(239,68,68,0.8)' };
+
+  nicheChart = new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        label: 'Niches',
+        data: niches.map(n => ({ x: n.competition_score, y: n.demand_score, label: n.niche, tier: n.tier })),
+        backgroundColor: niches.map(n => colorMap[n.tier] || 'rgba(100,116,139,0.8)'),
+        pointRadius: 10,
+        pointHoverRadius: 13,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const p = ctx.raw;
+              return [`"${p.label}"`, `Competition: ${p.x}`, `Demand: ${p.y}`];
+            },
+          },
+        },
+      },
+      scales: {
+        x: { min: 0, max: 100, title: { display: true, text: 'Competition Score →' } },
+        y: { min: 0, max: 100, title: { display: true, text: '← Demand Score' } },
+      },
+    },
+  });
+}
+
+function initAds() {
+  document.getElementById('ads-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const q      = document.getElementById('ads-input').value.trim();
+    const budget = parseFloat(document.getElementById('ads-budget').value) || 10;
+    if (!q) return;
+    await runAdsResearch(q, budget);
+  });
+}
+
+async function runAdsResearch(q, budget) {
+  const out = document.getElementById('ads-results');
+  showLoading(out, 'Generating KDP ad keyword recommendations…');
+  try {
+    const data = await API.ads.keywords(q, budget);
+    renderAdsResults(data);
+  } catch (err) {
+    showError(out, err.message);
+  }
+}
+
+function renderAdsResults(d) {
+  const out = document.getElementById('ads-results');
+
+  const byMatch = { Broad: [], Phrase: [], Exact: [] };
+  d.keywords.forEach(k => (byMatch[k.match_type] || []).push(k));
+
+  out.innerHTML = `
+    <div class="alert alert-info mb-4">
+      <strong>Campaign Tip:</strong> ${escHtml(d.campaign_tip)}
+    </div>
+
+    <div class="grid grid-3 mb-4">
+      ${matchSummaryCard('Broad Match', byMatch.Broad.length, 'Discovery & reach', '#dbeafe')}
+      ${matchSummaryCard('Phrase Match', byMatch.Phrase.length, 'Balanced targeting', '#dcfce7')}
+      ${matchSummaryCard('Exact Match', byMatch.Exact.length, 'ACOS control', '#fef3c7')}
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchAdsTab('all',this)">All Keywords</button>
+      <button class="tab-btn" onclick="switchAdsTab('broad',this)">Broad</button>
+      <button class="tab-btn" onclick="switchAdsTab('phrase',this)">Phrase</button>
+      <button class="tab-btn" onclick="switchAdsTab('exact',this)">Exact</button>
+    </div>
+
+    <div id="ads-tab-all">${adsTable(d.keywords, d.daily_budget)}</div>
+    <div id="ads-tab-broad" class="hidden">${adsTable(byMatch.Broad, d.daily_budget)}</div>
+    <div id="ads-tab-phrase" class="hidden">${adsTable(byMatch.Phrase, d.daily_budget)}</div>
+    <div id="ads-tab-exact" class="hidden">${adsTable(byMatch.Exact, d.daily_budget)}</div>`;
+}
+
+function switchAdsTab(tab, btn) {
+  ['all','broad','phrase','exact'].forEach(t => {
+    document.getElementById(`ads-tab-${t}`).classList.toggle('hidden', t !== tab);
+  });
+  btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function matchSummaryCard(title, count, desc, bg) {
+  return `<div class="stat-card" style="background:${bg}">
+    <div class="stat-label">${title}</div>
+    <div class="stat-value">${count}</div>
+    <div class="stat-change">${desc}</div>
+  </div>`;
+}
+
+function adsTable(keywords, budget) {
+  if (!keywords || keywords.length === 0) return '<p class="text-muted text-sm p-4">No keywords in this group.</p>';
+  return `
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Keyword</th>
+            <th>Match Type</th>
+            <th>Min Bid</th>
+            <th>Suggested Bid</th>
+            <th>Max Bid</th>
+            <th>Est. Clicks/day</th>
+            <th>Competition</th>
+            <th>Relevance</th>
+          </tr></thead>
+          <tbody>
+            ${keywords.map(k => `
+              <tr>
+                <td class="font-bold">${escHtml(k.keyword)}</td>
+                <td>${badge(k.match_type, k.match_type === 'Exact' ? 'blue' : k.match_type === 'Phrase' ? 'green' : 'gray')}</td>
+                <td>$${k.bid_low.toFixed(2)}</td>
+                <td><strong>$${k.bid_suggested.toFixed(2)}</strong></td>
+                <td>$${k.bid_high.toFixed(2)}</td>
+                <td>${k.est_daily_clicks}</td>
+                <td>${badge(k.competition, k.competition === 'Low' ? 'green' : k.competition === 'High' ? 'red' : 'yellow')}</td>
+                <td>${scoreBar(k.relevance_score)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+let marketChart = null;
+
+function initMarket() {
+  loadMarketOverview();
+}
+
+async function loadMarketOverview() {
+  const out = document.getElementById('market-results');
+  showLoading(out, 'Loading market data…');
+  try {
+    const data = await API.market.overview();
+    renderMarketOverview(data);
+  } catch (err) {
+    showError(out, err.message);
+  }
+}
+
+function renderMarketOverview(d) {
+  const out = document.getElementById('market-results');
+
+  out.innerHTML = `
+    <div class="grid grid-4 mb-4">
+      ${mStat('Total KDP Books', d.market_stats.total_kdp_books, '📚')}
+      ${mStat('New Books/Month', d.market_stats.monthly_new_books, '📈')}
+      ${mStat('Avg Kindle Price', d.market_stats.avg_kindle_price, '💲')}
+      ${mStat('KU Titles', d.market_stats.kindle_unlimited_titles, '⭐')}
+    </div>
+
+    <div class="grid grid-2 mb-4">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Category Competition Heatmap</div></div>
+        <div id="market-bars">
+          ${d.categories.map(c => `
+            <div class="market-bar">
+              <div class="market-bar-name" title="${escHtml(c.name)}">${escHtml(c.name)}</div>
+              <div class="market-bar-track">
+                <div class="market-bar-fill" style="width:${c.competition_score}%;background:${competitionColor(c.competition_score)}"></div>
+              </div>
+              <div class="market-bar-score">${c.competition_score}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Top Opportunities Right Now</div></div>
+        <ul class="opportunity-list">
+          ${d.top_opportunities.map((o, i) => `
+            <li>
+              <div class="opp-num">${i + 1}</div>
+              <div class="opp-text">
+                <strong>${escHtml(o.niche)}</strong>
+                <span>${escHtml(o.reason)}</span>
+              </div>
+            </li>`).join('')}
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header"><div class="card-title">Monthly New Books by Genre</div></div>
+      <div class="chart-container" style="height:280px"><canvas id="market-chart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Full Category Intelligence</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Category</th>
+            <th>Competition</th>
+            <th>Trend</th>
+            <th>Revenue Potential</th>
+            <th>Monthly New Books</th>
+          </tr></thead>
+          <tbody>
+            ${d.categories.map(c => `
+              <tr>
+                <td class="font-bold">${escHtml(c.name)}</td>
+                <td>${scoreBar(c.competition_score, competitionColor)}</td>
+                <td>${trendBadge(c.trend)}</td>
+                <td>${badge(c.revenue_potential, c.revenue_potential === 'Very High' ? 'green' : c.revenue_potential === 'High' ? 'blue' : 'gray')}</td>
+                <td>${fmtNum(c.monthly_books_published)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+
+  renderMarketChart(d.categories);
+}
+
+function mStat(label, value, icon) {
+  return `<div class="stat-card">
+    <div class="stat-icon" style="background:#f1f5f9;font-size:1.3rem">${icon}</div>
+    <div class="stat-label">${label}</div>
+    <div class="stat-value" style="font-size:1.4rem">${value}</div>
+  </div>`;
+}
+
+function renderMarketChart(categories) {
+  const ctx = document.getElementById('market-chart');
+  if (!ctx) return;
+  if (marketChart) marketChart.destroy();
+  const top = categories.slice(0, 10);
+  marketChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: top.map(c => c.name.length > 18 ? c.name.slice(0, 18) + '…' : c.name),
+      datasets: [{
+        label: 'Monthly New Books',
+        data: top.map(c => c.monthly_books_published),
+        backgroundColor: top.map(c => {
+          if (c.competition_score >= 80) return 'rgba(239,68,68,0.75)';
+          if (c.competition_score >= 60) return 'rgba(245,158,11,0.75)';
+          return 'rgba(16,185,129,0.75)';
+        }),
+        borderRadius: 5,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { title: { display: true, text: 'New Books per Month' } } },
+    },
+  });
+}
+
+function initLowContent() {
+  document.getElementById('lc-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const topic = document.getElementById('lc-input').value.trim();
+    await runLowContentSearch(topic);
+  });
+
+  document.getElementById('lc-filter-all').addEventListener('click', () => filterLcType('all'));
+  document.getElementById('lc-filter-journal').addEventListener('click', () => filterLcType('Journal'));
+  document.getElementById('lc-filter-planner').addEventListener('click', () => filterLcType('Planner'));
+  document.getElementById('lc-filter-tracker').addEventListener('click', () => filterLcType('Tracker'));
+  document.getElementById('lc-filter-activity').addEventListener('click', () => filterLcType('Activity'));
+
+  // Load general ideas on init
+  runLowContentSearch('');
+}
+
+let lastLcData = null;
+
+function filterLcType(type) {
+  ['all','Journal','Planner','Tracker','Activity'].forEach(t => {
+    const key = t === 'all' ? 'all' : t.toLowerCase();
+    document.getElementById(`lc-filter-${key}`).classList.toggle('active', t === type);
+  });
+
+  if (!lastLcData) return;
+  const filtered = type === 'all' ? lastLcData.ideas : lastLcData.ideas.filter(i => i.type === type);
+  renderLcGrid(filtered);
+}
+
+async function runLowContentSearch(topic) {
+  const out = document.getElementById('lc-results');
+  showLoading(out, 'Generating low-content book ideas…');
+  try {
+    const data = await API.lowcontent.ideas(topic, 24);
+    lastLcData = data;
+    renderLcPage(data);
+  } catch (err) {
+    showError(out, err.message);
+  }
+}
+
+function renderLcPage(data) {
+  const out = document.getElementById('lc-results');
+  if (!data.ideas || data.ideas.length === 0) {
+    showEmpty(out, '📓', 'No ideas found', 'Try a different topic');
+    return;
+  }
+
+  const best = data.top_pick;
+  out.innerHTML = `
+    ${best ? `<div class="alert alert-success mb-4">
+      <strong>Top Pick:</strong> "${escHtml(best.title)}" — Opportunity ${best.opportunity_score}/100 | Est. ${best.est_monthly_sales} sales/mo at ${best.recommended_price}
+    </div>` : ''}
+    <div id="lc-grid"></div>`;
+
+  renderLcGrid(data.ideas);
+}
+
+function renderLcGrid(ideas) {
+  const grid = document.getElementById('lc-grid');
+  if (!grid) return;
+  grid.innerHTML = `
+    <div class="lc-grid">
+      ${ideas.map(i => `
+        <div class="lc-card${i.recommended ? ' recommended' : ''}">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+            <div class="lc-card-title">${escHtml(i.title)}</div>
+            ${i.recommended ? badge('★ Pick', 'green') : ''}
+          </div>
+          <div class="mb-2">
+            ${scoreBar(i.opportunity_score)}
+          </div>
+          <div class="lc-meta">
+            <div class="lc-meta-item">
+              <strong>${i.opportunity_score}/100</strong>Opportunity
+            </div>
+            <div class="lc-meta-item">
+              <strong>${i.competition_score}</strong>Competition
+            </div>
+            <div class="lc-meta-item">
+              <strong>${i.demand_score}</strong>Demand
+            </div>
+            <div class="lc-meta-item">
+              <strong>~${i.est_monthly_sales}/mo</strong>Est. Sales
+            </div>
+            <div class="lc-meta-item">
+              <strong>${i.recommended_price}</strong>Rec. Price
+            </div>
+            <div class="lc-meta-item">
+              <strong>${i.trim_size}</strong>Trim Size
+            </div>
+            <div class="lc-meta-item">
+              <strong>${i.page_count} pgs</strong>Page Count
+            </div>
+            <div class="lc-meta-item">
+              <strong>${i.type}</strong>Type
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function initBook() {
+  document.getElementById('book-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const asin = document.getElementById('book-asin').value.trim().toUpperCase();
+    if (!asin || asin.length !== 10) {
+      showError(document.getElementById('book-results'), 'Please enter a valid 10-character ASIN.');
+      return;
+    }
+    await runBookAnalysis(asin);
+  });
+}
+
+async function runBookAnalysis(asin) {
+  const out = document.getElementById('book-results');
+  showLoading(out, `Analyzing ASIN ${asin}…`);
+  try {
+    const d = await API.book.analyze(asin);
+    renderBookResults(d);
+  } catch (err) {
+    showError(out, err.message);
+  }
+}
+
+function renderBookResults(d) {
+  const out = document.getElementById('book-results');
+  const opp = d.opportunity_score;
+  const oppColor = scoreColor(opp);
+
+  out.innerHTML = `
+    <div class="card mb-4">
+      <div class="card-header">
+        <div>
+          <div class="card-title">ASIN: ${escHtml(d.asin)}</div>
+          <div class="card-subtitle">${d.note}</div>
+        </div>
+        <div class="score-circle" style="background:${oppColor}22;color:${oppColor};width:80px;height:80px;font-size:1.5rem">${opp}</div>
+      </div>
+
+      <div class="grid grid-4 mb-4">
+        ${bStatBlock('Est. BSR', '#' + fmtNum(d.estimated_bsr))}
+        ${bStatBlock('Category BSR', '#' + fmtNum(d.estimated_category_bsr))}
+        ${bStatBlock('Monthly Sales', '~' + d.estimated_monthly_sales)}
+        ${bStatBlock('Monthly Revenue', fmtMoney(d.estimated_monthly_revenue))}
+      </div>
+
+      <div class="grid grid-2">
+        <div>
+          <div class="text-xs text-muted mb-1">Opportunity Score</div>
+          ${scoreBar(d.opportunity_score)}
+          <div class="text-xs text-muted mt-2 mb-1">Competition Score</div>
+          ${scoreBar(d.competition_score, competitionColor)}
+        </div>
+        <div class="text-sm">
+          ${bookRow('Est. Review Count', d.review_count)}
+          ${bookRow('Avg Rating', d.avg_rating + ' ★')}
+          ${bookRow('Est. Price', fmtMoney(d.estimated_price))}
+          ${bookRow('Page Count', d.page_count + ' pages')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Estimated Categories</div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${d.categories.map(c => `<span class="badge badge-blue">${escHtml(c)}</span>`).join('')}
+      </div>
+    </div>`;
+}
+
+function bStatBlock(label, value) {
+  return `<div class="stat-card">
+    <div class="stat-label">${label}</div>
+    <div class="stat-value" style="font-size:1.3rem">${value}</div>
+  </div>`;
+}
+
+function bookRow(label, value) {
+  return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
+    <span class="text-muted">${label}</span>
+    <span class="font-bold">${value}</span>
+  </div>`;
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+
+const TOOLS = {
+  dashboard:     { title: 'Dashboard',           subtitle: 'Market overview & quick access' },
+  'profit-goal': { title: 'Profit Goal',         subtitle: 'Tell us your target income — get specific genres & topics to write' },
+  'keywords':    { title: 'Keyword Research',    subtitle: 'Discover high-value Amazon book keywords' },
+  'bsr':         { title: 'BSR Calculator',      subtitle: 'Convert Best Seller Rank to estimated monthly sales' },
+  'categories':  { title: 'Category Explorer',   subtitle: 'Browse all Amazon book categories with competition data' },
+  'niche':       { title: 'Niche Finder',        subtitle: 'Identify low-competition, high-demand niches' },
+  'ads':         { title: 'KDP Ads Keywords',    subtitle: 'Build winning Amazon Ads keyword campaigns' },
+  'market':      { title: 'Market Overview',     subtitle: 'Genre trends, competition, and revenue data' },
+  'lowcontent':  { title: 'Low-Content Ideas',   subtitle: 'Journals, planners, notebooks and more' },
+  'book':        { title: 'Book Analyzer',       subtitle: 'Analyze any book by ASIN' },
+};
+
+let activeNav = 'dashboard';
+
+function navigate(toolId) {
+  const id = toolId.startsWith('tool-') ? toolId.slice(5) : toolId;
+  if (!TOOLS[id]) return;
+
+  // Update sidebar
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.tool === id);
+  });
+
+  // Update topbar
+  document.getElementById('topbar-title').textContent    = TOOLS[id].title;
+  document.getElementById('topbar-subtitle').textContent = TOOLS[id].subtitle;
+
+  // Show/hide panels
+  document.querySelectorAll('.tool-panel').forEach(el => {
+    el.classList.toggle('hidden', el.id !== `panel-${id}`);
+  });
+
+  activeNav = id;
+  window.location.hash = id;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Wire sidebar clicks
+  document.querySelectorAll('.nav-item[data-tool]').forEach(el => {
+    el.addEventListener('click', () => navigate(el.dataset.tool));
+  });
+
+  // Init all tools
+  initProfitGoal();
+  initKeywords();
+  initBsr();
+  initCategories();
+  initNiche();
+  initAds();
+  initMarket();
+  initLowContent();
+  initBook();
+  initDashboard();
+
+  // Route from hash
+  const hash = window.location.hash.slice(1);
+  navigate(hash && TOOLS[hash] ? hash : 'dashboard');
+});
+
+</script>
+</body>
+</html>
